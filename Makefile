@@ -68,4 +68,8 @@ cleancopy:
 purge:
 	@rm -f $(NAME).html $(NAME)-*.html changes.html
 
+init-gh-pages:
+	git checkout --orphan
+	cp -r makespec/templates/gh-pages/* .
+
 .PHONY: clean purge html
