@@ -9,6 +9,8 @@
 #
 #    NAME=somename
 #    GITHUB=http://github.com/someuser/somename/
+#    FORMATS=
+#    
 #    include makespec/Makefile
 #
 
@@ -20,13 +22,33 @@ REVSHRT=$(shell git log -1 --format="%h" $(SOURCE))
 REVLINK=$(GITHUB)commit/$(REVHASH)
 
 RESULTFILES=$(NAME).html
+RESULTFILES+=$(foreach f,$(FORMATS),$(NAME).$(f))
 
 HTML_TEMPLATE=makespec/templates/default.html
 
-new: purge html changes
+new: purge html changes $(FORMATS)
 
 html: $(NAME).html
 pdf:  $(NAME).pdf
+ttl:  $(NAME).ttl
+owl:  $(NAME).owl
+
+info:
+	@echo NAME=$(NAME)
+	@echo GITHUB=$(GITHUB)
+	@echo SOURCE=$(SOURCE)
+	@echo FORMATS=$(FORMATS)
+	@echo RESULTFILES=$(RESULTFILES)
+	@echo REVHASH=$(REVHASH)
+	@echo REVSHRT=$(REVSHRT)
+	@echo REVDATE=$(REVDATE)
+	@if [ "$(FORMATS)" ] ; then \
+		for f in html $(FORMATSS); do \
+			echo "$$f"; \
+		done \
+	fi		
+
+# TODO: REFERENCES and METADATA not supported yet
 
 $(NAME).html: $(NAME).md $(HTML_TEMPLATE) $(REFERENCES)
 	@echo "creating $@..."
@@ -42,23 +64,37 @@ $(NAME).html: $(NAME).md $(HTML_TEMPLATE) $(REFERENCES)
 #$(NAME).pdf: $(NAME).md $(REFERENCES)
 #	pandoc -N --bibliography=$(REFERENCES) --toc -f markdown -o $(NAME).pdf $(NAME).md
 
+$(NAME)-tmp.ttl: $(SOURCE)
+	$(if $(shell grep -P '\t' $<),$(error "found tabs in $<"))
+	@awk '/^```/ { FLAG=!FLAG } !FLAG && /^    / { print }' $< | sed 's/^    //' > $@
+
+$(NAME).ttl: $(NAME)-tmp.ttl
+	@rapper --guess $< -o turtle > $@
+	
+$(NAME).owl: $(NAME)-tmp.ttl
+	@rapper --guess $< -o rdfxml > $@
+
 changes: changes.html
 
 changes.html:
 	@git log -4 --pretty=format:'<li><a href=$(NAME)-%h.html><tt>%ci</tt></a>: <a href="$(GITHUB)commit/%H"><em>%s</em></a></li>' $(SOURCE) > $@
 
 revision: $(RESULTFILES)
-	@cp $(NAME).html $(NAME)-${REVSHRT}.html
+	@for f in html $(FORMATS); do \
+		cp $(NAME).$$f $(NAME)-$(REVSHRT).$$f ; \
+	done 
 
-website: clean purge revision changes.html 
+website: clean purge revision changes.html $(RESULTFILES) 
 	@echo "new revision to be shown at $(GITHUB)"
 	@rm $(RESULTFILES)
 	@git checkout gh-pages
 	@perl -pi -e 's!$(NAME)-[0-9a-z]{7}!$(NAME)-${REVSHRT}!g' index.html
 	@sed -i '/<!-- BEGIN CHANGES -->/,/<!-- END CHANGES -->/ {//!d}; /<!-- BEGIN CHANGES -->/r changes.html' index.html
-	@cp $(NAME)-${REVSHRT}.html $(NAME).html
-	@git add index.html $(NAME)-${REVSHRT}.html $(RESULTFILES)
-	@git commit -m "revision ${REVSHRT}"
+	@for f in html $(FORMATS); do \
+		cp $(NAME)-$(REVSHRT).$$f $(NAME).$$f ; \
+	done 
+	@git add index.html $(NAME)-$(REVSHRT).html $(RESULTFILES)
+	@git commit -m "revision $(REVSHRT)"
 	@git checkout master
 
 cleancopy:
@@ -66,7 +102,7 @@ cleancopy:
 	@git diff-index --quiet HEAD -- 
 
 purge:
-	@rm -f $(NAME).html $(NAME)-*.html changes.html
+	@rm -f $(RESULTFILES) $(NAME)-*.html $(NAME)-*.ttl $(NAME)-*.owl changes.html 
 
 init-gh-pages:
 	git checkout --orphan
