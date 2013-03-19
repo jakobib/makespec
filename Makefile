@@ -1,9 +1,9 @@
 #
 # USAGE: 
 #
-# 1. Copy or git-clone this file into subdirectory 'makespec'
+# 1. Copy or clone this file into subdirectory 'makespec'
 #
-#    git clone https://github.com/jakobib/makespec.git
+#    git submodule add https://github.com/jakobib/makespec.git
 #
 # 2. Create a Makefile pointing to this file
 #
