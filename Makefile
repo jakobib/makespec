@@ -105,7 +105,8 @@ purge:
 	@rm -f $(RESULTFILES) $(NAME)-*.html $(NAME)-*.ttl $(NAME)-*.owl changes.html 
 
 init-gh-pages:
-	git checkout --orphan
-	cp -r makespec/templates/gh-pages/* .
+	@git checkout --orphan gh-pages
+	@cp -r makespec/templates/gh-pages/* .
+	@echo YOU NEED TO EDIT and commit index.html and other files
 
 .PHONY: clean purge html
