@@ -65,8 +65,7 @@ $(NAME).html: $(NAME).md $(HTML_TEMPLATE) $(REFERENCES)
 #	pandoc -N --bibliography=$(REFERENCES) --toc -f markdown -o $(NAME).pdf $(NAME).md
 
 $(NAME)-tmp.ttl: $(SOURCE)
-	$(if $(shell grep -P '\t' $<),$(error "found tabs in $<"))
-	@awk '/^```/ { FLAG=!FLAG } !FLAG && /^    / { print }' $< | sed 's/^    //' > $@
+	@./makespec/CodeBlocks $< > $@
 
 $(NAME).ttl: $(NAME)-tmp.ttl
 	@rapper --guess $< -o turtle > $@
