@@ -25,6 +25,7 @@ RESULTFILES=$(NAME).html
 RESULTFILES+=$(foreach f,$(FORMATS),$(NAME).$(f))
 
 HTML_TEMPLATE=makespec/templates/default.html
+VARS=-V GITHUB=$(GITHUB)
 
 new: purge html changes $(FORMATS)
 
@@ -43,21 +44,23 @@ info:
 	@echo REVSHRT=$(REVSHRT)
 	@echo REVDATE=$(REVDATE)
 	@if [ "$(FORMATS)" ] ; then \
-		for f in html $(FORMATSS); do \
+		for f in html $(FORMATS); do \
 			echo "$$f"; \
 		done \
 	fi		
 
 # TODO: REFERENCES and METADATA not supported yet
+# TODO: automatically insert "fork me on GitHub" badge
 
-$(NAME).html: $(NAME).md $(HTML_TEMPLATE) $(REFERENCES)
+$(NAME).html: $(NAME).md changes.html $(HTML_TEMPLATE) $(REFERENCES)
 	@echo "creating $@..."
 	@sed 's/GIT_REVISION_DATE/${REVDATE}/' $(SOURCE) > $(NAME).tmp
-	@pandoc -s -N --template=$(HTML_TEMPLATE) --toc -f markdown -t html5 $(NAME).tmp \
+	@pandoc -s -N --template=$(HTML_TEMPLATE) --toc -f markdown -t html5 $(VARS) $(NAME).tmp \
 		| perl -p -e 's!(http://[^<]+)\.</p>!<a href="$$1"><code class="url">$$1</code></a>.</p>!g' \
 		| perl -p -e 's!(<h2(.+)span>\s*([^<]+)</a></h2>)!<a id="$$3"></a>$$1!g' \
 		| sed 's!<td style="text-align: center;">!<td>!' \
-		| sed 's!GIT_REVISION_HASH!<a href="${REVLINK}">${REVSHRT}<\/a>!' > $@
+		| sed 's!GIT_REVISION_HASH!<a href="${REVLINK}">${REVSHRT}<\/a>!' \
+		| perl -p -e 's!GIT_CHANGES!`cat changes.html`!ge' > $@
 	@git diff-index --quiet HEAD $(SOURCE) || echo "Current $(SOURCE) not checked in, so this is a DRAFT!"
 
 # FIXME: the current PDF does not look that nice...
@@ -76,36 +79,35 @@ $(NAME).owl: $(NAME)-tmp.ttl
 changes: changes.html
 
 changes.html:
-	@git log -4 --pretty=format:'<li><a href=$(NAME)-%h.html><tt>%ci</tt></a>: <a href="$(GITHUB)commit/%H"><em>%s</em></a></li>' $(SOURCE) > $@
+	@echo "<ul>" > $@
+	@git log -4 --pretty=format:'<li><a href=$(NAME)-%h.html><tt>%ci</tt></a>: <a href="$(GITHUB)commit/%H">%s</a></li>' $(SOURCE) >> $@
+	@echo "</ul>" >> $@
 
 revision: $(RESULTFILES)
 	@for f in html $(FORMATS); do \
 		cp $(NAME).$$f $(NAME)-$(REVSHRT).$$f ; \
 	done 
 
-website: clean purge revision changes.html $(RESULTFILES) 
+website: clean purge revision changes.html $(RESULTFILES)
 	@echo "new revision to be shown at $(GITHUB)"
 	@rm $(RESULTFILES)
-	@git checkout gh-pages
-	@perl -pi -e 's!$(NAME)-[0-9a-z]{7}!$(NAME)-${REVSHRT}!g' index.html
-	@sed -i '/<!-- BEGIN CHANGES -->/,/<!-- END CHANGES -->/ {//!d}; /<!-- BEGIN CHANGES -->/r changes.html' index.html
+	@git checkout gh-pages || git checkout --orphan gh-pages
 	@for f in html $(FORMATS); do \
 		cp $(NAME)-$(REVSHRT).$$f $(NAME).$$f ; \
-	done 
+	done
+	@echo "<!DOCTYPE html><html><head><meta http-equiv='refresh' content='0;url=$(NAME).html'/></head></html>" > index.html
 	@git add index.html $(NAME)-$(REVSHRT).html $(RESULTFILES)
 	@git commit -m "revision $(REVSHRT)"
 	@git checkout master
 
 cleancopy:
 	@echo "checking that no local modifcations exist..."
-	@git diff-index --quiet HEAD -- 
+	@git diff-index --quiet HEAD --
 
-purge:
-	@rm -f $(RESULTFILES) $(NAME)-*.html $(NAME)-*.ttl $(NAME)-*.owl changes.html 
+clean:
+	@rm -f $(NAME)-*.*
 
-init-gh-pages:
-	@git checkout --orphan gh-pages
-	@cp -r makespec/templates/gh-pages/* .
-	@echo YOU NEED TO EDIT and commit index.html and other files
+purge: clean
+	@rm -f $(RESULTFILES) changes.html
 
 .PHONY: clean purge html
