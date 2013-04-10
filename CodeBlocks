@@ -14,6 +14,7 @@ foreach (@ARGV) {
     my $doc = JSON->new->decode(`pandoc -t json $_`);
     $doc = $doc->[1];
     foreach (@$doc) {
+        next unless ref $_;
         my ($type,$content) = %{$_};
         next unless $type eq 'CodeBlock';
         my $formats = $content->[0]->[1];
