@@ -27,6 +27,12 @@ RESULTFILES+=$(foreach f,$(FORMATS),$(NAME).$(f))
 HTML_TEMPLATE=makespec/templates/default.html
 VARS=-V GITHUB=$(GITHUB)
 
+ifeq ($(REVISIONS),)
+	COMMIT_NUMBER = 5
+else 
+	COMMIT_NUMBER = $(REVISIONS)
+endif
+
 new: purge html changes $(FORMATS)
 
 html: $(NAME).html
@@ -80,7 +86,8 @@ changes: changes.html
 
 changes.html:
 	@echo "<ul>" > $@
-	@git log -4 --pretty=format:'<li><a href=$(NAME)-%h.html><tt>%ci</tt></a>: <a href="$(GITHUB)commit/%H">%s</a></li>' $(SOURCE) >> $@
+	@git log -n $(COMMIT_NUMBER) \
+	--pretty=format:'<li><a href=$(NAME)-%h.html><tt>%ci</tt></a>: <a href="$(GITHUB)commit/%H">%s</a></li>' $(SOURCE) >> $@
 	@echo "</ul>" >> $@
 
 revision: $(RESULTFILES)
