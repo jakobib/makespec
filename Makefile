@@ -74,7 +74,7 @@ $(NAME).html: $(NAME).md changes.html $(HTML_TEMPLATE) $(REFERENCES)
 #	pandoc -N --bibliography=$(REFERENCES) --toc -f markdown -o $(NAME).pdf $(NAME).md
 
 $(NAME)-tmp.ttl: $(SOURCE)
-	@./makespec/CodeBlocks $< > $@
+	@./makespec/CodeBlocks $(TTLFORMAT) $< > $@
 
 $(NAME).ttl: $(NAME)-tmp.ttl
 	@rapper --guess $< -o turtle > $@

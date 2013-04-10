@@ -53,7 +53,11 @@ If your specification contains a RDF ontology written in Turtle syntax, set the
 In addition makespec contains experimental support of generating and updating
 [GitHub pages](http://pages.github.com/).
 
-Have a look at `makespec/Makefile` for detailed usage.
+Have a look at `makespec/Makefile` for detailed usage. Additional parameters
+include:
+
+* REVISIONS - number of revisions to show at `GIT_CHANGES`
+* TTLFORMAT - CodeBlock format to extract as RDF/Turtle
 
 ## Examples
 
