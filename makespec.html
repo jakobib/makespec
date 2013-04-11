@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="author" content="Jakob Voß" />
+  <meta name="date" content="2013-04-11 11:08:32 +0200" />
+  <title>Creating specifications with makespec</title>
+   <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <style type="text/css">
+  body { font-family: sans-serif; }
+  a { text-decoration: none }
+  a:hover { text-decoration: underline }
+  h1 { font: 170% sans-serif }
+  h1.title { font-size: 200%; font-weight: bold; }
+  h2 { font: 140% sans-serif }
+  h3 { font: 120% sans-serif }
+  dt { font-weight: bold; }
+  h1, h2, h3, h1 a, h2 a, h3 a { color: #005A9C; }
+  table { border-collapse: collapse; }
+  td { border: 1px solid #999; padding: 3px }
+  dl p { margin-top: 0; }
+  dt { margin-top: 0.8em; }
+  dd { margin-left: 1.5em; }
+  ol { margin-bottom: 1em; }
+  table + p { margin-top: 1em; }
+  </style>
+</head>
+<body>
+<a href="https://github.com/jakobib/makespec.git"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png" alt="Fork me on GitHub"></a>
+<header>
+<h1 class="title">Creating specifications with makespec</h1>
+<h3 class="author">Jakob Voß</h3>
+<h4 class="date">2013-04-11 11:08:32 +0200</h4>
+</header>
+
+<h1>Table of Contents</h1>
+<nav id="TOC">
+<ul>
+<li><a href="#introduction"><span class="toc-section-number">1</span> Introduction</a></li>
+<li><a href="#synopsis"><span class="toc-section-number">2</span> Synopsis</a></li>
+<li><a href="#configuration"><span class="toc-section-number">3</span> Configuration</a></li>
+<li><a href="#variables"><span class="toc-section-number">4</span> Variables</a></li>
+<li><a href="#requirements"><span class="toc-section-number">5</span> Requirements</a></li>
+<li><a href="#examples"><span class="toc-section-number">6</span> Examples</a></li>
+<li><a href="#revision-history"><span class="toc-section-number">7</span> Revision history</a></li>
+</ul>
+</nav>
+<h1 id="introduction"><a href="#TOC"><span class="header-section-number">1</span> Introduction</a></h1>
+<p><strong>makespace</strong> is a git repository containing a Makefile and templates to create specifications written in <a href="http://johnmacfarlane.net/pandoc/demo/example9/pandocs-markdown.html">Pandoc Markdown</a>. The Makefile also supports generating and updating <a href="http://pages.github.com/">GitHub pages</a> to publish the specification.</p>
+<p>Feel free to reuse, <a href="https://github.com/jakobib/makespec/issues">comment</a>, fork, and modify! The current version can be found at <a href="https://github.com/jakobib/makespec"><code class="url">https://github.com/jakobib/makespec</code></a>.</p>
+<h1 id="synopsis"><a href="#TOC"><span class="header-section-number">2</span> Synopsis</a></h1>
+<p>Create a git repository to host your specification</p>
+<pre><code>mkdir yourspec &amp;&amp; cd yourspec
+git init</code></pre>
+<p>Include makespec as git submodule</p>
+<pre><code>git submodule add https://github.com/jakobib/makespec.git</code></pre>
+<p>Create a short <code>Makefile</code> with basic metadata and settings</p>
+<pre><code>NAME=yourspec
+GITHUB=http://github.com/youraccount/yourspec/
+FORMATS=
+REVISIONS=
+
+include makespec/Makefile</code></pre>
+<p>Write the specification in Markdown syntax, for instance with vim editor</p>
+<pre><code>vim facyspec.md</code></pre>
+<p>Create a HTML version</p>
+<pre><code>make html</code></pre>
+<p>Commit to your repository</p>
+<pre><code>git add Makefile yourspec.md
+git commit -m &quot;created a fancy specification&quot;</code></pre>
+<p>Create a <code>gh-pages</code> branch with the HTML version</p>
+<pre><code>make website</code></pre>
+<p>To fully clone a repository that makes use of makespec:</p>
+<pre><code>git clone git@github.com:youraccount/yourspec.git
+git checkout -b gh-pages origin/gh-pages
+git submodule update --init</code></pre>
+<h1 id="configuration"><a href="#TOC"><span class="header-section-number">3</span> Configuration</a></h1>
+<dl>
+<dt>NAME</dt>
+<dd><p>Required short name. Should not contain spaces and similar nasty characters.</p>
+</dd>
+<dt>SOURCE</dt>
+<dd><p>Source file in Pandoc Markdown syntax, set to <code>NAME.md</code> by default.</p>
+</dd>
+<dt>GITHUB</dt>
+<dd><p>Github repository to link to in revision history.</p>
+</dd>
+<dt>REVISIONS</dt>
+<dd><p>Number of revisions to show in the revision history (GIT-CHANGES).</p>
+</dd>
+<dt>FORMATS</dt>
+<dd><p>If your specification contains a RDF ontology written in Turtle syntax, set <code>FORMATS=ttl owl</code>. More formats may be supported in the future.</p>
+</dd>
+<dt>TITLE</dt>
+<dd><p>Title, unless already specified in the source file.</p>
+</dd>
+<dt>AUTHOR</dt>
+<dd><p>List of authors, unless already specified in the source file.</p>
+</dd>
+<dt>DATE</dt>
+<dd><p>Current date, unless already specified in the source file. Set to <code>2013-04-11 11:08:32 +0200</code> by default, which is replaced by a timestamp of the latest commit.</p>
+</dd>
+</dl>
+<h1 id="variables"><a href="#TOC"><span class="header-section-number">4</span> Variables</a></h1>
+<p>The following character strings are automatically replaced (please replace minus-signs with underscore!)</p>
+<dl>
+<dt>GIT-REVISION-DATE</dt>
+<dd><p>timestamp of the latest commit.</p>
+</dd>
+<dt>GIT-REVISION-HASH</dt>
+<dd><p>Short revision hash of the latest commit.</p>
+</dd>
+<dt>GIT-CHANGES</dt>
+<dd><p>Revision history. Length can be set with <code>REVISIONS</code>.</p>
+</dd>
+</dl>
+<h1 id="requirements"><a href="#TOC"><span class="header-section-number">5</span> Requirements</a></h1>
+<ul>
+<li>GNU Make</li>
+<li><a href="http://johnmacfarlane.net/pandoc/">Pandoc</a> version &gt;= 1.9</li>
+<li><a href="http://librdf.org/raptor/rapper.html">Rapper</a> from Raptor RDF library (only if writing an RDF ontology)</li>
+</ul>
+<h1 id="examples"><a href="#TOC"><span class="header-section-number">6</span> Examples</a></h1>
+<p>The following specifications make use of makespec:</p>
+<ul>
+<li><a href="https://github.com/gbv/ssso">Simple Service Status Ontology (SSSO)</a></li>
+<li><a href="https://github.com/gbv/dso">Document Service Ontology (DSO)</a></li>
+<li><a href="https://github.com/gbv/daiaspec">Document Availability Information API (DAIA)</a></li>
+<li><a href="https://github.com/gbv/paia">Patrons Account Information API (PAIA)</a></li>
+<li>...</li>
+</ul>
+<p>Last but not least, the documentation of makespec is also created with makespec. <a href="https://github.com/jakobib/makespec/blob/master/README.md">This document</a> was last modified at 2013-04-11 11:08:32 +0200 with hash <a href="https://github.com/jakobib/makespec.gitcommit/496a28db92a72daa86303dde3c1ac32590d45501">496a28d</a>.</p>
+<h1 id="revision-history"><a href="#TOC"><span class="header-section-number">7</span> Revision history</a></h1>
+<p><ul>
+<li><a href=makespec-496a28d.html><tt>2013-04-11 11:09:34 +0200</tt></a>: <a href="https://github.com/jakobib/makespec.gitcommit/496a28db92a72daa86303dde3c1ac32590d45501">let makespec create its own documentation</a></li>
+<li><a href=makespec-b4ace58.html><tt>2013-04-10 10:12:39 +0200</tt></a>: <a href="https://github.com/jakobib/makespec.gitcommit/b4ace585d60c2e3c1a5d9086c95022b0a6e3e44d">introduced TTLFORMAT variable</a></li>
+<li><a href=makespec-3d0b608.html><tt>2013-03-19 12:10:21 +0100</tt></a>: <a href="https://github.com/jakobib/makespec.gitcommit/3d0b608f83365520871b4e39fdcf07cbe20cb71e">usage documentation</a></li>
+<li><a href=makespec-e58c403.html><tt>2013-03-19 09:48:41 +0100</tt></a>: <a href="https://github.com/jakobib/makespec.gitcommit/e58c40380bb5262d0e8bd0c9bb22b49d54c96290">fixed init-gh-pages</a></li>
+<li><a href=makespec-51d6519.html><tt>2013-03-18 14:40:45 +0100</tt></a>: <a href="https://github.com/jakobib/makespec.gitcommit/51d6519b7112aefe152be11bf60f1729b785ee9f">initial commit</a></li></ul>
+</p>
+</body>
+</html>
