@@ -18,7 +18,6 @@ ifeq ($(DIRNAME),makespec)
 		MAKESPEC = .
 		TITLE    = Creating specifications with makespec
 		AUTHOR   = Jakob Voß
-		DATE     = $(REVDATE)
 	endif
 endif
 
@@ -85,10 +84,10 @@ owl:  $(NAME).owl
 $(NAME).html: sources changes.html $(HTML_TEMPLATE)
 	@echo "creating $@..."
 	@rm -f $(NAME).tmp
-	@if [ "$(TITLE)$(AUTHOR)$(DATE)" ]; then \
+	@if [ '$(TITLE)$(AUTHOR)' ]; then \
 		echo "% $(TITLE)" > $(NAME).tmp ; \
 		echo "% $(AUTHOR)" >> $(NAME).tmp ; \
-		echo "% $(DATE)" >> $(NAME).tmp ; \
+		echo "% $(REVDATE)" >> $(NAME).tmp ; \
 		echo "" >> $(NAME).tmp ; \
 	fi
 	@sed 's/GIT_REVISION_DATE/${REVDATE}/' $(SOURCE) >> $(NAME).tmp

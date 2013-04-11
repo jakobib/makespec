@@ -76,11 +76,6 @@ TITLE
 AUTHOR
   : List of authors, unless already specified in the source file.
 
-DATE
-  : Current date, unless already specified in the source file. Set
-    to `GIT_REVISION_DATE` by default, which is replaced by a timestamp
-    of the latest commit.
-
 # Variables
 
 The following character strings are automatically replaced (please replace
