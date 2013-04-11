@@ -1,65 +1,109 @@
-# makespec
+# Introduction
 
-**makespace** is a git repository containing Makefiles and templates to create
-specifications written in [Pandoc Markdown]. The current version can be found
-at <https://github.com/jakobib/makespec>. Feel free to 
-[comment](https://github.com/jakobib/makespec/issues), reuse, fork, and modify!
+**makespace** is a git repository containing a Makefile and templates to create
+specifications written in [Pandoc Markdown]. The Makefile also supports
+generating and updating [GitHub pages](http://pages.github.com/) to publish the
+specification.
 
+Feel free to reuse, [comment](https://github.com/jakobib/makespec/issues),
+fork, and modify! The current version can be found at
+<https://github.com/jakobib/makespec>.
 
-    Simple Markdown file ---makespec--->  HTML page
-                                          Website
-                                          Schema files
-                                          ...
+# Synopsis
 
-## Requirements
+Create a git repository to host your specification
+
+    mkdir yourspec && cd yourspec
+    git init
+
+Include makespec as git submodule
+
+    git submodule add https://github.com/jakobib/makespec.git
+
+Create a short `Makefile` with basic metadata and settings
+
+    NAME=yourspec
+    GITHUB=http://github.com/youraccount/yourspec/
+    FORMATS=
+    REVISIONS=
+    
+    include makespec/Makefile
+
+Write the specification in Markdown syntax, for instance with vim editor
+
+    vim facyspec.md
+
+Create a HTML version
+
+    make html
+
+Commit to your repository
+
+    git add Makefile yourspec.md
+    git commit -m "created a fancy specification"
+
+Create a `gh-pages` branch with the HTML version
+
+    make website
+
+To fully clone a repository that makes use of makespec:
+
+    git clone git@github.com:youraccount/yourspec.git
+    git checkout -b gh-pages origin/gh-pages
+    git submodule update --init
+
+# Configuration
+
+NAME
+  : Required short name. Should not contain spaces and similar nasty characters.
+
+SOURCE
+  : Source file in Pandoc Markdown syntax, set to `NAME.md` by default.
+
+GITHUB
+  : Github repository to link to in revision history.
+
+REVISIONS
+  : Number of revisions to show in the revision history (GIT-CHANGES).
+
+FORMATS
+  : If your specification contains a RDF ontology written in Turtle syntax, 
+    set `FORMATS=ttl owl`. More formats may be supported in the future.
+
+TITLE
+  : Title, unless already specified in the source file.
+
+AUTHOR
+  : List of authors, unless already specified in the source file.
+
+DATE
+  : Current date, unless already specified in the source file. Set
+    to `GIT_REVISION_DATE` by default, which is replaced by a timestamp
+    of the latest commit.
+
+# Variables
+
+The following character strings are automatically replaced (please replace
+minus-signs with underscore!)
+
+GIT-REVISION-DATE
+  : timestamp of the latest commit.
+
+GIT-REVISION-HASH
+  : Short revision hash of the latest commit.
+
+GIT-CHANGES
+  : Revision history. Length can be set with `REVISIONS`.
+
+# Requirements
 
 * GNU Make
 * [Pandoc](http://johnmacfarlane.net/pandoc/) version >= 1.9
 * [Rapper](http://librdf.org/raptor/rapper.html) from Raptor RDF library
   (only if writing an RDF ontology)
 
-## Usage
 
-You should manage the specification in a git repository for revision control:
-
-    mkdir yourspec && cd yourspec
-    git init
-
-Write the specification in Markdown syntax with an editor of your choice:
-
-    vim facyspec.md
-    git add fancyspec.md
-    git commit -m "created a fancy specification"
-
-Copy or clone makespec into subdirectory `makespec`. I recommend to use it as git
-submodule:
-
-    git submodule add https://github.com/jakobib/makespec.git
-
-Create a minimal Makefile with basic metadata like this:
-
-    NAME=fancyspec
-    GITHUB=http://github.com/youraccount/yourspec/
-    FORMATS=
-    
-    include makespec/Makefile
-
-If your specification contains a RDF ontology written in Turtle syntax, set the
-"`FORMATS=ttl owl`". To create a nice looking HTML version of your specification
-(and RDF files, if selected), just run:
-
-    make
-
-In addition makespec contains experimental support of generating and updating
-[GitHub pages](http://pages.github.com/).
-
-Have a look at `makespec/Makefile` for detailed usage. Additional parameters
-include:
-
-* REVISIONS - number of revisions to show at `GIT_CHANGES`
-* TTLFORMAT - CodeBlock format to extract as RDF/Turtle
-
-## Examples
+# Examples
 
 The following specifications make use of makespec:
 
@@ -69,6 +113,13 @@ The following specifications make use of makespec:
 * [Patrons Account Information API (PAIA)](https://github.com/gbv/paia)
 * ...
 
+Last but not least, the documentation of makespec is also created with makespec.
+[This document](https://github.com/jakobib/makespec/blob/master/README.md) was
+last modified at GIT_REVISION_DATE with hash GIT_REVISION_HASH.
 
 [Pandoc Markdown]: http://johnmacfarlane.net/pandoc/demo/example9/pandocs-markdown.html
+
+# Revision history
+
+GIT_CHANGES
 

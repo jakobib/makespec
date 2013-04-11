@@ -1,31 +1,30 @@
-#
-# USAGE: 
-#
-# 1. Copy or clone this file into subdirectory 'makespec'
-#
-#    git submodule add https://github.com/jakobib/makespec.git
-#
-# 2. Create a Makefile pointing to this file
-#
-#    NAME=somename
-#    GITHUB=http://github.com/someuser/somename/
-#    FORMATS=
-#    
-#    include makespec/Makefile
-#
+########################################################################
+# makespec Makefile - licensed under GPL 3.0 by Jakob Voss             #
+#                                                                      #
+# Current version: https://github.com/jakobib/makespec                 #
+# Documentation:   http://jakobib.github.com/makespec                  #
+#                                                                      #
+# Requires GNU Make.                                                   #
+########################################################################
 
-SOURCE=$(NAME).md
-REVHASH=$(shell git log -1 --format="%H" $(SOURCE))
-REVDATE=$(shell git log -1 --format="%ai" $(SOURCE))
-REVSHRT=$(shell git log -1 --format="%h" $(SOURCE))
+DIRNAME  = $(shell basename $(CURDIR))
+MAKESPEC = $(wildcard makespec)
 
-REVLINK=$(GITHUB)commit/$(REVHASH)
+ifeq ($(DIRNAME),makespec)
+	ifeq ($(MAKESPEC),)
+		NAME     = makespec
+		GITHUB   = https://github.com/jakobib/makespec.git
+		SOURCE   = README.md
+		MAKESPEC = .
+		TITLE    = Creating specifications with makespec
+		AUTHOR   = Jakob Voß
+		DATE     = $(REVDATE)
+	endif
+endif
 
-RESULTFILES=$(NAME).html
-RESULTFILES+=$(foreach f,$(FORMATS),$(NAME).$(f))
-
-HTML_TEMPLATE=makespec/templates/default.html
-VARS=-V GITHUB=$(GITHUB)
+ifeq ($(NAME),)
+	NAME = $(DIRNAME)
+endif
 
 ifeq ($(REVISIONS),)
 	COMMIT_NUMBER = 5
@@ -33,14 +32,30 @@ else
 	COMMIT_NUMBER = $(REVISIONS)
 endif
 
-new: purge html changes $(FORMATS)
+########################################################################
 
-html: $(NAME).html
-pdf:  $(NAME).pdf
-ttl:  $(NAME).ttl
-owl:  $(NAME).owl
+ifeq ($(SOURCE),)
+	SOURCE = $(NAME).md
+endif
+
+REVHASH = $(shell git log -1 --format="%H" -- $(SOURCE))
+REVDATE = $(shell git log -1 --format="%ai" -- $(SOURCE))
+REVSHRT = $(shell git log -1 --format="%h" -- $(SOURCE))
+
+ifneq ($(GITHUB),)
+	REVLINK = $(GITHUB)commit/$(REVHASH)
+endif
+
+RESULTFILES  = $(NAME).html
+RESULTFILES += $(foreach f,$(FORMATS),$(NAME).$(f))
+
+HTML_TEMPLATE=$(MAKESPEC)/templates/default.html
+VARS=-V GITHUB=$(GITHUB)
+
+########################################################################
 
 info:
+	@echo MAKESPEC=$(MAKESPEC)
 	@echo NAME=$(NAME)
 	@echo GITHUB=$(GITHUB)
 	@echo SOURCE=$(SOURCE)
@@ -55,12 +70,28 @@ info:
 		done \
 	fi		
 
+sources: Makefile $(MAKESPEC) $(SOURCE) $(REFERENCES)
+
+new: purge html changes $(FORMATS)
+
+html: $(NAME).html
+pdf:  $(NAME).pdf
+ttl:  $(NAME).ttl
+owl:  $(NAME).owl
+
 # TODO: REFERENCES and METADATA not supported yet
 # TODO: automatically insert "fork me on GitHub" badge
 
-$(NAME).html: $(NAME).md changes.html $(HTML_TEMPLATE) $(REFERENCES)
+$(NAME).html: sources changes.html $(HTML_TEMPLATE)
 	@echo "creating $@..."
-	@sed 's/GIT_REVISION_DATE/${REVDATE}/' $(SOURCE) > $(NAME).tmp
+	@rm -f $(NAME).tmp
+	@if [ "$(TITLE)$(AUTHOR)$(DATE)" ]; then \
+		echo "% $(TITLE)" > $(NAME).tmp ; \
+		echo "% $(AUTHOR)" >> $(NAME).tmp ; \
+		echo "% $(DATE)" >> $(NAME).tmp ; \
+		echo "" >> $(NAME).tmp ; \
+	fi
+	@sed 's/GIT_REVISION_DATE/${REVDATE}/' $(SOURCE) >> $(NAME).tmp
 	@pandoc -s -N --template=$(HTML_TEMPLATE) --toc -f markdown -t html5 $(VARS) $(NAME).tmp \
 		| perl -p -e 's!(http://[^<]+)\.</p>!<a href="$$1"><code class="url">$$1</code></a>.</p>!g' \
 		| perl -p -e 's!(<h2(.+)span>\s*([^<]+)</a></h2>)!<a id="$$3"></a>$$1!g' \
@@ -70,11 +101,11 @@ $(NAME).html: $(NAME).md changes.html $(HTML_TEMPLATE) $(REFERENCES)
 	@git diff-index --quiet HEAD $(SOURCE) || echo "Current $(SOURCE) not checked in, so this is a DRAFT!"
 
 # FIXME: the current PDF does not look that nice...
-#$(NAME).pdf: $(NAME).md $(REFERENCES)
-#	pandoc -N --bibliography=$(REFERENCES) --toc -f markdown -o $(NAME).pdf $(NAME).md
+#$(NAME).pdf: sources
+#	pandoc -N --bibliography=$(REFERENCES) --toc -f markdown -o $(NAME).pdf $(SOURCE)
 
-$(NAME)-tmp.ttl: $(SOURCE)
-	@./makespec/CodeBlocks $(TTLFORMAT) $< > $@
+$(NAME)-tmp.ttl: sources
+	@./$(MAKESPEC)/CodeBlocks $(TTLFORMAT) $(SOURCE) > $@
 
 $(NAME).ttl: $(NAME)-tmp.ttl
 	@rapper --guess $< -o turtle > $@
@@ -84,7 +115,7 @@ $(NAME).owl: $(NAME)-tmp.ttl
 
 changes: changes.html
 
-changes.html:
+changes.html: sources
 	@echo "<ul>" > $@
 	@git log -n $(COMMIT_NUMBER) \
 	--pretty=format:'<li><a href=$(NAME)-%h.html><tt>%ci</tt></a>: <a href="$(GITHUB)commit/%H">%s</a></li>' $(SOURCE) >> $@
@@ -95,7 +126,7 @@ revision: $(RESULTFILES)
 		cp $(NAME).$$f $(NAME)-$(REVSHRT).$$f ; \
 	done 
 
-website: clean purge revision changes.html $(RESULTFILES)
+website: sources clean purge revision changes.html $(RESULTFILES)
 	@echo "new revision to be shown at $(GITHUB)"
 	@rm $(RESULTFILES)
 	@git checkout gh-pages || git checkout --orphan gh-pages
@@ -118,3 +149,4 @@ purge: clean
 	@rm -f $(RESULTFILES) changes.html
 
 .PHONY: clean purge html
+
