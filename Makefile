@@ -13,7 +13,7 @@ MAKESPEC = $(wildcard makespec)
 ifeq ($(DIRNAME),makespec)
 	ifeq ($(MAKESPEC),)
 		NAME     = makespec
-		GITHUB   = https://github.com/jakobib/makespec.git
+		GITHUB   = https://github.com/jakobib/makespec/
 		SOURCE   = README.md
 		MAKESPEC = .
 		TITLE    = Creating specifications with makespec

@@ -49,7 +49,7 @@ Create a `gh-pages` branch with the HTML version
 To fully clone a repository that makes use of makespec:
 
     git clone git@github.com:youraccount/yourspec.git
-    git checkout -b gh-pages origin/gh-pages
+    git checkout -b gh-pages origin/gh-pages && git checkout master
     git submodule update --init
 
 # Configuration
