@@ -9,7 +9,9 @@ Feel free to reuse, [comment](https://github.com/jakobib/makespec/issues),
 fork, and modify! The current version can be found at
 <https://github.com/jakobib/makespec>.
 
-# Synopsis
+# Usage
+
+## Synopsis
 
 Create a git repository to host your specification
 
@@ -52,7 +54,7 @@ To fully clone a repository that makes use of makespec:
     git checkout -b gh-pages origin/gh-pages && git checkout master
     git submodule update --init
 
-# Configuration
+## Configuration
 
 NAME
   : Required short name. Should not contain spaces and similar nasty characters.
@@ -76,10 +78,10 @@ TITLE
 AUTHOR
   : List of authors, unless already specified in the source file.
 
-# Variables
+## Variables
 
-The following character strings, if all minus-signs are replaces with
-underscore, are automatically replaced.
+The following character strings (if you replace minus-signs with underscore)
+are automatically replaced.
 
 GIT-REVISION-DATE
   : timestamp of the latest commit.
@@ -93,13 +95,12 @@ GIT-CHANGES
 GIT-ATOM-FEED
   : URL of an Atom feed with revisions at GitHub.
 
-# Requirements
+## Requirements
 
 * GNU Make
 * [Pandoc](http://johnmacfarlane.net/pandoc/) version >= 1.9
 * [Rapper](http://librdf.org/raptor/rapper.html) from Raptor RDF library
   (only if writing an RDF ontology)
-
 
 # Examples
 

@@ -46,6 +46,8 @@ ifneq ($(GITHUB),)
 	GIT_ATOM_FEED = $(GITHUB)commits/master.atom
 endif
 
+COMBINED = $(NAME)-tmp.md
+
 RESULTFILES  = $(NAME).html
 RESULTFILES += $(foreach f,$(FORMATS),$(NAME).$(f))
 
@@ -72,7 +74,7 @@ info:
 
 sources: Makefile $(MAKESPEC) $(SOURCE) $(REFERENCES)
 
-new: purge html changes $(FORMATS)
+new: purge html $(FORMATS)
 
 html: $(NAME).html
 pdf:  $(NAME).pdf
@@ -82,23 +84,25 @@ owl:  $(NAME).owl
 # TODO: REFERENCES and METADATA not supported yet
 # TODO: automatically insert "fork me on GitHub" badge
 
-$(NAME).html: sources changes.html $(HTML_TEMPLATE)
-	@echo "creating $@..."
-	@rm -f $(NAME).tmp
+$(COMBINED): sources changes.md
+	@rm -f $@
 	@if [ '$(TITLE)$(AUTHOR)' ]; then \
-		echo "% $(TITLE)" > $(NAME).tmp ; \
-		echo "% $(AUTHOR)" >> $(NAME).tmp ; \
-		echo "% $(REVDATE)" >> $(NAME).tmp ; \
-		echo "" >> $(NAME).tmp ; \
+		echo "% $(TITLE)" > $@ ; \
+		echo "% $(AUTHOR)" >> $@ ; \
+		echo "% $(REVDATE)" >> $@ ; \
+		echo "" >> $@ ; \
 	fi
-	@sed 's/GIT_REVISION_DATE/${REVDATE}/' $(SOURCE) >> $(NAME).tmp
-	@pandoc -s -N --template=$(HTML_TEMPLATE) --toc -f markdown -t html5 $(VARS) $(NAME).tmp \
+	@sed 's/GIT_REVISION_DATE/${REVDATE}/' $(SOURCE) \
+		| sed 's!GIT_ATOM_FEED!${GIT_ATOM_FEED}!' \
+		| sed 's!GIT_REVISION_HASH![${REVSHRT}](${REVLINK})!' \
+		| perl -p -e 's!GIT_CHANGES!`cat changes.md`!ge' >> $@
+
+$(NAME).html: $(COMBINED) $(HTML_TEMPLATE)
+	@echo "Creating $@..."
+	@pandoc -s -N --template=$(HTML_TEMPLATE) --toc -f markdown -t html5 $(VARS) $(COMBINED) \
 		| perl -p -e 's!(http://[^<]+)\.</p>!<a href="$$1"><code class="url">$$1</code></a>.</p>!g' \
 		| perl -p -e 's!(<h2(.+)span>\s*([^<]+)</a></h2>)!<a id="$$3"></a>$$1!g' \
-		| sed 's!<td style="text-align: center;">!<td>!' \
-		| sed 's!GIT_REVISION_HASH!<a href="${REVLINK}">${REVSHRT}<\/a>!' \
-		| sed 's!GIT_ATOM_FEED!${GIT_ATOM_FEED}!' \
-		| perl -p -e 's!GIT_CHANGES!`cat changes.html`!ge' > $@
+		| sed 's!<td style="text-align: center;">!<td>!' > $@
 	@git diff-index --quiet HEAD $(SOURCE) || echo "Current $(SOURCE) not checked in, so this is a DRAFT!"
 
 # FIXME: the current PDF does not look that nice...
@@ -114,20 +118,20 @@ $(NAME).ttl: $(NAME)-tmp.ttl
 $(NAME).owl: $(NAME)-tmp.ttl
 	@rapper --guess $< -o rdfxml > $@
 
-changes: changes.html
+changes: changes.md
 
-changes.html: sources
-	@echo "<ul>" > $@
+changes.md: sources
+	@echo "" > $@
 	@git log -n $(COMMIT_NUMBER) \
-	--pretty=format:'<li><a href=$(NAME)-%h.html><tt>%ci</tt></a>: <a href="$(GITHUB)commit/%H">%s</a></li>' $(SOURCE) >> $@
-	@echo "</ul>" >> $@
+	--pretty=format:'* [`%ci`]($(NAME)-%h.html): [%s]($(GITHUB)commit/%H)' $(SOURCE) >> $@
+	@echo "" >> $@
 
 revision: $(RESULTFILES)
 	@for f in html $(FORMATS); do \
 		cp $(NAME).$$f $(NAME)-$(REVSHRT).$$f ; \
 	done 
 
-website: sources clean purge revision changes.html $(RESULTFILES)
+website: sources clean purge revision $(RESULTFILES)
 	@echo "new revision to be shown at $(GITHUB)"
 	@rm $(RESULTFILES)
 	@git checkout gh-pages || git checkout --orphan gh-pages
@@ -144,10 +148,10 @@ cleancopy:
 	@git diff-index --quiet HEAD --
 
 clean:
-	@rm -f $(NAME)-*.*
+	@rm -f $(NAME)-*.* *.tmp
 
 purge: clean
-	@rm -f $(RESULTFILES) changes.html
+	@rm -f $(RESULTFILES) changes.md
 
 .PHONY: clean purge html
 
