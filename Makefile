@@ -43,6 +43,7 @@ REVSHRT = $(shell git log -1 --format="%h" -- $(SOURCE))
 
 ifneq ($(GITHUB),)
 	REVLINK = $(GITHUB)commit/$(REVHASH)
+	GIT_ATOM_FEED = $(GITHUB)commits/master.atom
 endif
 
 RESULTFILES  = $(NAME).html
@@ -96,6 +97,7 @@ $(NAME).html: sources changes.html $(HTML_TEMPLATE)
 		| perl -p -e 's!(<h2(.+)span>\s*([^<]+)</a></h2>)!<a id="$$3"></a>$$1!g' \
 		| sed 's!<td style="text-align: center;">!<td>!' \
 		| sed 's!GIT_REVISION_HASH!<a href="${REVLINK}">${REVSHRT}<\/a>!' \
+		| sed 's!GIT_ATOM_FEED!${GIT_ATOM_FEED}!' \
 		| perl -p -e 's!GIT_CHANGES!`cat changes.html`!ge' > $@
 	@git diff-index --quiet HEAD $(SOURCE) || echo "Current $(SOURCE) not checked in, so this is a DRAFT!"
 

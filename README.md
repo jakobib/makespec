@@ -78,8 +78,8 @@ AUTHOR
 
 # Variables
 
-The following character strings are automatically replaced (please replace
-minus-signs with underscore!)
+The following character strings, if all minus-signs are replaces with
+underscore, are automatically replaced.
 
 GIT-REVISION-DATE
   : timestamp of the latest commit.
@@ -89,6 +89,9 @@ GIT-REVISION-HASH
 
 GIT-CHANGES
   : Revision history. Length can be set with `REVISIONS`.
+
+GIT-ATOM-FEED
+  : URL of an Atom feed with revisions at GitHub.
 
 # Requirements
 
@@ -115,6 +118,8 @@ last modified at GIT_REVISION_DATE with hash GIT_REVISION_HASH.
 [Pandoc Markdown]: http://johnmacfarlane.net/pandoc/demo/example9/pandocs-markdown.html
 
 # Revision history
+
+Also available as [Atom feed](GIT_ATOM_FEED).
 
 GIT_CHANGES
 
