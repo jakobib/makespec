@@ -1,6 +1,6 @@
 # Introduction
 
-**makespace** is a git repository containing a Makefile and templates to create
+**makespec** is a git repository containing a Makefile and templates to create
 specifications written in [Pandoc Markdown]. The Makefile also supports
 generating and updating [GitHub pages](http://pages.github.com/) to publish the
 specification.
@@ -69,7 +69,7 @@ REVISIONS
   : Number of revisions to show in the revision history (GIT-CHANGES).
 
 FORMATS
-  : If your specification contains a RDF ontology written in Turtle syntax, 
+  : If your specification contains a RDF ontology written in Turtle syntax,
     set `FORMATS=ttl owl`. More formats may be supported in the future.
 
 TITLE
@@ -77,6 +77,10 @@ TITLE
 
 AUTHOR
   : List of authors, unless already specified in the source file.
+
+DATE
+  : Fixed date of publication. Set to a timestamp of the latest commit
+    by default.
 
 ## Variables
 
@@ -98,6 +102,7 @@ GIT-ATOM-FEED
 ## Requirements
 
 * GNU Make
+* Perl
 * [Pandoc](http://johnmacfarlane.net/pandoc/) version >= 1.9
 * [Rapper](http://librdf.org/raptor/rapper.html) from Raptor RDF library
   (only if writing an RDF ontology)

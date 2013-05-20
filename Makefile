@@ -41,6 +41,10 @@ REVHASH = $(shell git log -1 --format="%H" -- $(SOURCE))
 REVDATE = $(shell git log -1 --format="%ai" -- $(SOURCE))
 REVSHRT = $(shell git log -1 --format="%h" -- $(SOURCE))
 
+ifeq ($(DATE),)
+	DATE = $(REVDATE)
+endif
+
 ifneq ($(GITHUB),)
 	REVLINK = $(GITHUB)commit/$(REVHASH)
 	GIT_ATOM_FEED = $(GITHUB)commits/master.atom
@@ -57,6 +61,9 @@ VARS=-V GITHUB=$(GITHUB)
 ########################################################################
 
 info:
+	@echo TITLE=$(TITLE)
+	@echo AUTHOR=$(AUTHOR)
+	@echo DATE=$(DATE)
 	@echo MAKESPEC=$(MAKESPEC)
 	@echo NAME=$(NAME)
 	@echo GITHUB=$(GITHUB)
@@ -89,7 +96,7 @@ $(COMBINED): sources changes.md
 	@if [ '$(TITLE)$(AUTHOR)' ]; then \
 		echo "% $(TITLE)" > $@ ; \
 		echo "% $(AUTHOR)" >> $@ ; \
-		echo "% $(REVDATE)" >> $@ ; \
+		echo "% $(DATE)" >> $@ ; \
 		echo "" >> $@ ; \
 	fi
 	@sed 's/GIT_REVISION_DATE/${REVDATE}/' $(SOURCE) \
