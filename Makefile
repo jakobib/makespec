@@ -31,6 +31,19 @@ else
 	COMMIT_NUMBER = $(REVISIONS)
 endif
 
+ifeq ($(ABSTRACT)$(ABSTRACT_FROM),)
+	ifneq ($(wildcard abstract.md),)
+		ABSTRACT_FROM = abstract.md
+	endif
+endif
+
+# note that ABSTRACT will never contain newlines!
+ifeq ($(ABSTRACT),)
+	ifneq ($(ABSTRACT_FROM),)
+		ABSTRACT := $(shell cat "$(ABSTRACT_FROM)")
+	endif
+endif
+
 ########################################################################
 
 ifeq ($(SOURCE),)
@@ -64,6 +77,8 @@ info:
 	@echo TITLE=$(TITLE)
 	@echo AUTHOR=$(AUTHOR)
 	@echo DATE=$(DATE)
+	@echo ABSTRACT_FROM=$(ABSTRACT_FROM)
+	@echo ABSTRACT=$(ABSTRACT)
 	@echo MAKESPEC=$(MAKESPEC)
 	@echo NAME=$(NAME)
 	@echo GITHUB=$(GITHUB)
@@ -102,6 +117,7 @@ $(COMBINED): sources changes.md
 	@sed 's/GIT_REVISION_DATE/${REVDATE}/' $(SOURCE) \
 		| sed 's!GIT_ATOM_FEED!${GIT_ATOM_FEED}!' \
 		| sed 's!GIT_REVISION_HASH![${REVSHRT}](${REVLINK})!' \
+		| sed 's!{DOCUMENT_ABSTRACT}!${ABSTRACT}!' \
 		| perl -p -e 's!GIT_CHANGES!`cat changes.md`!ge' >> $@
 
 $(NAME).html: $(COMBINED) $(HTML_TEMPLATE)

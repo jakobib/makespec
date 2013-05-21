@@ -1,9 +1,6 @@
 # Introduction
 
-**makespec** is a git repository containing a Makefile and templates to create
-specifications written in [Pandoc Markdown]. The Makefile also supports
-generating and updating [GitHub pages](http://pages.github.com/) to publish the
-specification.
+{DOCUMENT_ABSTRACT}
 
 Feel free to reuse, [comment](https://github.com/jakobib/makespec/issues),
 fork, and modify! The current version can be found at
@@ -82,10 +79,18 @@ DATE
   : Fixed date of publication. Set to a timestamp of the latest commit
     by default.
 
-## Variables
+ABSTRACT
+  : A short abstract (in Markdown syntax) which is used as template 
+    variable DOCUMENT_ABSTRACT.
+
+ABSTRACT_FROM
+  : A file to read abstract from if no ABSTRACT was defined. Set to
+    `abstract.md` by default.
+
+## Document variables
 
 The following character strings (if you replace minus-signs with underscore)
-are automatically replaced.
+are automatically replaced before conversion from Markdown syntax.
 
 GIT-REVISION-DATE
   : timestamp of the latest commit.
@@ -98,6 +103,10 @@ GIT-CHANGES
 
 GIT-ATOM-FEED
   : URL of an Atom feed with revisions at GitHub.
+
+DOCUMENT_ABSTRACT
+  : Abstract, if defined with configuration variable `ABSTRACT` or 
+    `ABSTRACT_FROM`.
 
 ## Requirements
 
