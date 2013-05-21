@@ -89,19 +89,20 @@ ABSTRACT_FROM
 
 ## Document variables
 
-The following character strings (if you replace minus-signs with underscore)
-are automatically replaced before conversion from Markdown syntax.
+The following variables, if enclosed in curly brackets (such as
+`{THIS_VARIABLE}`) are automatically replaced before conversion from Markdown
+syntax.
 
-GIT-REVISION-DATE
+GIT_REVISION_DATE
   : timestamp of the latest commit.
 
-GIT-REVISION-HASH
+GIT_REVISION_HASH
   : Short revision hash of the latest commit.
 
-GIT-CHANGES
-  : Revision history. Length can be set with `REVISIONS`.
+GIT_CHANGES
+  : Revision history. Length can be set with configuration variable `REVISIONS`.
 
-GIT-ATOM-FEED
+GIT_ATOM_FEED
   : URL of an Atom feed with revisions at GitHub.
 
 DOCUMENT_ABSTRACT
@@ -128,13 +129,13 @@ The following specifications make use of makespec:
 
 Last but not least, the documentation of makespec is also created with makespec.
 [This document](https://github.com/jakobib/makespec/blob/master/README.md) was
-last modified at GIT_REVISION_DATE with hash GIT_REVISION_HASH.
+last modified at {GIT_REVISION_DATE} with hash {GIT_REVISION_HASH}.
 
 [Pandoc Markdown]: http://johnmacfarlane.net/pandoc/demo/example9/pandocs-markdown.html
 
 # Revision history
 
-Also available as [Atom feed](GIT_ATOM_FEED).
+Also available as [Atom feed]({GIT_ATOM_FEED}).
 
-GIT_CHANGES
+{GIT_CHANGES}
 

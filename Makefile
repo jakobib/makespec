@@ -114,11 +114,11 @@ $(COMBINED): sources changes.md
 		echo "% $(DATE)" >> $@ ; \
 		echo "" >> $@ ; \
 	fi
-	@sed 's/GIT_REVISION_DATE/${REVDATE}/' $(SOURCE) \
-		| sed 's!GIT_ATOM_FEED!${GIT_ATOM_FEED}!' \
-		| sed 's!GIT_REVISION_HASH![${REVSHRT}](${REVLINK})!' \
+	@sed 's/{GIT_REVISION_DATE}/${REVDATE}/' $(SOURCE) \
+		| sed 's!{GIT_ATOM_FEED}!${GIT_ATOM_FEED}!' \
+		| sed 's!{GIT_REVISION_HASH}![${REVSHRT}](${REVLINK})!' \
 		| sed 's!{DOCUMENT_ABSTRACT}!${ABSTRACT}!' \
-		| perl -p -e 's!GIT_CHANGES!`cat changes.md`!ge' >> $@
+		| perl -p -e 's!{GIT_CHANGES}!`cat changes.md`!ge' >> $@
 
 $(NAME).html: $(COMBINED) $(HTML_TEMPLATE)
 	@echo "Creating $@..."
