@@ -1,20 +1,9 @@
-ifeq ($(words $(MAKEFILE_LIST)),1)
-	NAME     = makespec
-	SOURCE   = makespec.md
-	GITHUB   = https://$(GIT)hub.com/jakobib/makespec/
-	TITLE    = Creating specifications with makespec
-	AUTHOR   = Jakob Voß
-	ABSTRACT_FROM = README.md
-endif
+########################################################################
+# Initialize configuration variables                                   #
+########################################################################
 
 ifeq ($(NAME),)
 	NAME = $(shell basename $(CURDIR))
-endif
-
-ifeq ($(REVISIONS),)
-	COMMIT_NUMBER = 5
-else 
-	COMMIT_NUMBER = $(REVISIONS)
 endif
 
 ifeq ($(ABSTRACT)$(ABSTRACT_FROM),)
@@ -42,7 +31,15 @@ ifeq ($(DATE),)
 	DATE = $(REVDATE)
 endif
 
-ifneq ($(GITHUB),)
-	REVLINK = $(GITHUB)commit/$(REVHASH)
-	GIT_ATOM_FEED = $(GITHUB)commits/master.atom
+ifeq ($(REVISIONS),)
+	REVISIONS = 5
 endif
+
+ifneq ($(GITHUB),)
+	REVLINK       = $(GITHUB)commit/$(REVHASH)
+	GIT_ATOM_FEED = $(GITHUB)commits/master.atom
+    LOGFORMAT     = * [`%ci`]($(NAME)-%h.html): [%s]($(GITHUB)commit/%H)
+else
+    LOGFORMAT     = * [`%ci`]($(NAME)-%h.html): %s
+endif
+

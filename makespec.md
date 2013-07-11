@@ -2,35 +2,46 @@
 
 {DOCUMENT_ABSTRACT}
 
-Feel free to reuse, [comment](https://github.com/jakobib/makespec/issues),
-fork, and modify! The current version can be found at
-<https://github.com/jakobib/makespec>.
-
 # Usage
 
-## Synopsis
+## Setup
 
-Create a git repository to host your specification
+Best practice using makedoc is to host your specification in a git repository,
+optionally published at [GitHub](http://github.com/). Your repository should
+contain at least:
 
-    mkdir yourspec && cd yourspec
-    git init
+ * The specification as Pandoc Markdown source file (e.g. `myspec.md`)
+ * A `Makefile` with basic settings and [configuration], such as:
+   
+        NAME=myspec
+        GITHUB=https://github.com/myaccount/myspec/
+     
+        include makespec/Makefile
 
-Include makespec as git submodule
+ * A subdirectory `makespec` containing makespec. Best practice is inclusion
+   as as git submodule. To do so in a new git repository:
 
-    git submodule add https://github.com/jakobib/makespec.git
+        git submodule add https://github.com/jakobib/makespec.git
 
-Create a short `Makefile` with basic metadata and settings
+To clone an existing specification that uses makespace this way:
 
-    NAME=yourspec
-    GITHUB=http://github.com/youraccount/yourspec/
-    FORMATS=
-    REVISIONS=
-    
-    include makespec/Makefile
+    git clone --recursive http://github.com/myaccount/myspec.git
 
-Write the specification in Markdown syntax, for instance with vim editor
+If you publish the specification as GitHub pages, you should not forget to also
+clone the `gh-pages` branch:
 
-    vim facyspec.md
+    git checkout -b gh-pages origin/gh-pages && git checkout master
+
+## Workflow
+
+Make sure you have the most recent version
+
+    git pull origin master gh-pages
+
+Edit the specification source file in Markdown syntax, for instance with vim
+editor
+
+    vim myspec.md
 
 Create a HTML version
 
@@ -38,20 +49,20 @@ Create a HTML version
 
 Commit to your repository
 
-    git add Makefile yourspec.md
-    git commit -m "created a fancy specification"
+    git add Makefile myspec.md
+    git commit -m "improved my fancy specification"
 
 Create a `gh-pages` branch with the HTML version
 
     make website
 
-To fully clone a repository that makes use of makespec:
+Publish
 
-    git clone git@github.com:youraccount/yourspec.git
-    git checkout -b gh-pages origin/gh-pages && git checkout master
-    git submodule update --init
+    git push origin master gh-pages
 
 ## Configuration
+
+[configuration]: #configuration
 
 NAME
   : Required short name. Should not contain spaces and similar nasty characters.
@@ -112,7 +123,7 @@ DOCUMENT_ABSTRACT
 ## Requirements
 
 * GNU Make
-* Perl
+* Perl >= 5.14.1
 * [Pandoc](http://johnmacfarlane.net/pandoc/) version >= 1.9
 * [Rapper](http://librdf.org/raptor/rapper.html) from Raptor RDF library
   (only if writing an RDF ontology)
@@ -131,7 +142,6 @@ Last but not least, the documentation of makespec is also created with makespec.
 [This document](https://github.com/jakobib/makespec/blob/master/README.md) was
 last modified at {GIT_REVISION_DATE} with hash {GIT_REVISION_HASH}.
 
-[Pandoc Markdown]: http://johnmacfarlane.net/pandoc/demo/example9/pandocs-markdown.html
 
 # Revision history
 
