@@ -85,7 +85,7 @@ $(COMBINED): sources
 		GIT_REVISION_HASH '[${REVSHRT}](${REVLINK})' \
 		DOCUMENT_ABSTRACT '$(ABSTRACT)' \
 		GIT_CHANGES: changes.tmp \
-		< $(SOURCE) >> $@
+		< $(SOURCE) | $(MAKESPEC)/include.pl >> $@
 	@rm -f changes.tmp
 
 $(NAME).html: $(COMBINED) $(HTML_TEMPLATE)

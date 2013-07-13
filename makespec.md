@@ -120,6 +120,10 @@ DOCUMENT_ABSTRACT
   : Abstract, if defined with configuration variable `ABSTRACT` or 
     `ABSTRACT_FROM`.
 
+## Plugins
+
+`plugins.md`{.include}
+
 ## Requirements
 
 * GNU Make
