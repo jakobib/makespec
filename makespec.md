@@ -74,7 +74,7 @@ GITHUB
   : Github repository to link to in revision history.
 
 REVISIONS
-  : Number of revisions to show in the revision history (GIT-CHANGES).
+  : Number of revisions to show in the revision history (GIT_CHANGES).
 
 FORMATS
   : If your specification contains a RDF ontology written in Turtle syntax,
@@ -120,6 +120,10 @@ ABSTRACT
   : Abstract, if defined with configuration variable `ABSTRACT` or 
     `ABSTRACT_FROM`.
 
+VERSION
+  : The current version number as determined by looking for the latest git tag
+    in the current branch that matches the regular expression `^v[0-9]`.
+
 ## Plugins
 
 `plugins.md`{.include}
@@ -146,8 +150,9 @@ Last but not least, the documentation of makespec is also created with makespec.
 [This document](https://github.com/jakobib/makespec/blob/master/README.md) was
 last modified at {GIT_REVISION_DATE} with hash {GIT_REVISION_HASH}.
 
-
 # Revision history
+
+This document is version {VERSION}.
 
 Also available as [Atom feed]({GIT_ATOM_FEED}).
 

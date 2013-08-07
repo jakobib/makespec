@@ -38,6 +38,8 @@ COMBINED = $(NAME).tmp
 RESULTFILES  = $(NAME).html
 RESULTFILES += $(foreach f,$(FORMATS),$(NAME).$(f))
 
+VERSION=$(shell git describe --abbrev=0 --tags | sed '/^[^v]/d; s/^v//' | head -1)
+
 ########################################################################
 
 
@@ -45,6 +47,7 @@ info:
 	@echo TITLE='$(TITLE)'
 	@echo AUTHOR='$(AUTHOR)'
 	@echo DATE='$(DATE)'
+	@echo VERSION='$(VERSION)'
 	@echo ABSTRACT_FROM='$(ABSTRACT_FROM)'
 	@echo ABSTRACT='$(ABSTRACT)'
 	@echo MAKESPEC='$(MAKESPEC)'
@@ -87,6 +90,7 @@ $(COMBINED): sources
 		GIT_ATOM_FEED	  '$(GIT_ATOM_FEED)' \
 		GIT_REVISION_HASH '[${REVSHRT}](${REVLINK})' \
 		ABSTRACT '$(ABSTRACT)' \
+		VERSION '$(VERSION)' \
 		GIT_CHANGES: changes.tmp \
 		< $(SOURCE) | $(MAKESPEC)/include.pl >> $@
 	@rm -f changes.tmp
