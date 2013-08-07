@@ -10,6 +10,7 @@
 # path of this file
 MAKESPEC = $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
 
+# makespec documents itself by default
 ifeq ($(words $(MAKEFILE_LIST)),1)
 	NAME     = makespec
 	SOURCE   = makespec.md
@@ -19,20 +20,26 @@ ifeq ($(words $(MAKEFILE_LIST)),1)
 	ABSTRACT_FROM = README.md
 endif
 
+# include files
 include $(MAKESPEC)/executables.make
 include $(MAKESPEC)/configuration.make
+include $(MAKESPEC)/formats.make
 
 ########################################################################
 
-COMBINED = $(NAME)-tmp.md
+VARS=-V GITHUB=$(GITHUB) 
+
+TEX_VARS=-V documentclass=scrreprt -V "mainfont=DejaVu Serif"
+
+########################################################################
+
+COMBINED = $(NAME).tmp
 
 RESULTFILES  = $(NAME).html
 RESULTFILES += $(foreach f,$(FORMATS),$(NAME).$(f))
 
-HTML_TEMPLATE=$(MAKESPEC)/templates/default.html
-VARS=-V GITHUB=$(GITHUB)
-
 ########################################################################
+
 
 info:
 	@echo TITLE='$(TITLE)'
@@ -57,12 +64,8 @@ info:
 
 sources: Makefile $(MAKESPEC) $(SOURCE) $(REFERENCES)
 
+# rebuild all output formats
 new: purge html $(FORMATS)
-
-html: $(NAME).html
-pdf:  $(NAME).pdf
-ttl:  $(NAME).ttl
-owl:  $(NAME).owl
 
 # TODO: REFERENCES and METADATA not supported yet
 # TODO: automatically insert "fork me on GitHub" badge
@@ -83,22 +86,39 @@ $(COMBINED): sources
 		GIT_REVISION_DATE '$(REVDATE)' \
 		GIT_ATOM_FEED	  '$(GIT_ATOM_FEED)' \
 		GIT_REVISION_HASH '[${REVSHRT}](${REVLINK})' \
-		DOCUMENT_ABSTRACT '$(ABSTRACT)' \
+		ABSTRACT '$(ABSTRACT)' \
 		GIT_CHANGES: changes.tmp \
 		< $(SOURCE) | $(MAKESPEC)/include.pl >> $@
 	@rm -f changes.tmp
 
-$(NAME).html: $(COMBINED) $(HTML_TEMPLATE)
+status:
+	@$(GIT) diff-index --quiet HEAD $(SOURCE) || echo "Current $(SOURCE) not checked in, so this is a DRAFT!"
+
+$(NAME).html: $(COMBINED) $(HTML_TEMPLATE) status
 	@echo "Creating $@..."
 	@$(PANDOC) --smart -s -N --template=$(HTML_TEMPLATE) --toc -f markdown -t html5 $(VARS) $(COMBINED) \
 		| perl -p -e 's!(http://[^<]+)\.</p>!<a href="$$1"><code class="url">$$1</code></a>.</p>!g' \
 		| perl -p -e 's!(<h2(.+)span>\s*([^<]+)</a></h2>)!<a id="$$3"></a>$$1!g' \
 		| sed 's!<td style="text-align: center;">!<td>!' > $@
-	@$(GIT) diff-index --quiet HEAD $(SOURCE) || echo "Current $(SOURCE) not checked in, so this is a DRAFT!"
 
-# FIXME: the current PDF does not look that nice...
-#$(NAME).pdf: sources
-#	$(PANDOC) -N --bibliography=$(REFERENCES) --toc -f markdown -o $(NAME).pdf $(SOURCE)
+$(NAME).tex:
+	@$(PANDOC) --smart -s -N --template=$(TEX_TEMPLATE) --toc -f markdown -o $@ $(COMBINED) $(VARS) $(TEX_VARS)
+#		$(BIBARGS) $(BIBLATEX)
+
+$(NAME).pdf: $(COMBINED) $(TEX_TEMPLATE) status
+	@echo "Creating $@..."
+	@$(PANDOC) --smart -s -N --template=$(TEX_TEMPLATE) --latex-engine=xelatex --toc -f markdown -o $@ $(COMBINED) $(VARS) $(TEX_VARS)
+
+# --bibliography=$(REFERENCES) 
+
+$(NAME).epub: $(COMBINED) $(EPUB_CSS)
+	$(PANDOC) --epub-stylesheet $(EPUB_CSS) -N -S --template $(HTML_TEMPLATE) --toc $(COMBINED) -o $@
+
+$(NAME).rtf: $(COMBINED)
+	@$(PANDOC) --smart -s -N --toc $(COMBINED) -o $@
+
+$(NAME).odt: $(COMBINED)
+	@$(PANDOC) --smart -s -N --toc $(COMBINED) -o $@
 
 $(NAME)-tmp.ttl: sources
 	@$(MAKESPEC)/CodeBlocks $(TTLFORMAT) $(SOURCE) > $@
@@ -136,5 +156,4 @@ clean:
 purge: clean
 	@rm -f $(RESULTFILES)
 
-.PHONY: clean purge html
-
+.PHONY: info clean purge default status

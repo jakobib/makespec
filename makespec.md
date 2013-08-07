@@ -1,6 +1,6 @@
 # Introduction
 
-{DOCUMENT_ABSTRACT}
+{ABSTRACT}
 
 # Usage
 
@@ -92,7 +92,7 @@ DATE
 
 ABSTRACT
   : A short abstract (in Markdown syntax) which is used as template 
-    variable DOCUMENT_ABSTRACT.
+    variable ABSTRACT.
 
 ABSTRACT_FROM
   : A file to read abstract from if no ABSTRACT was defined. Set to
@@ -116,7 +116,7 @@ GIT_CHANGES
 GIT_ATOM_FEED
   : URL of an Atom feed with revisions at GitHub.
 
-DOCUMENT_ABSTRACT
+ABSTRACT
   : Abstract, if defined with configuration variable `ABSTRACT` or 
     `ABSTRACT_FROM`.
 

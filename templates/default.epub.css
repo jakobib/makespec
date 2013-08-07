@@ -1,0 +1,17 @@
+/* This defines styles and classes used in the book */
+body { margin-left: 5%; margin-right: 5%; margin-top: 5%; margin-bottom: 5%; text-align: justify; font-size: medium; }
+code { font-family: monospace; }
+h1, h2, h3, h4, h5 { text-align: left; }
+h1.title { text-align: center; }
+h2.author { text-align: center; }
+
+p { margin: 0.8em 0; }
+dt { font-weight: bold; }
+code { 
+  font-family: Monaco, Andale Mono, Courier New, monospace;
+  padding: 1px 3px;
+}
+pre code { 
+  font-family: Monaco, Andale Mono, Courier New, monospace;
+  padding: 0; 
+}
