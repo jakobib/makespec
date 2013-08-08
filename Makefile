@@ -42,20 +42,20 @@ ifneq ($(REVHASH),)
 		else
 			COMMITS_SINCE_VERSION=$(shell $(GIT) rev-list v$(VERSION).. | wc -l)
 		endif
-		VERSION := "$(VERSION)rev$(COMMITS_SINCE_VERSION)"
+		VERSION := $(VERSION)rev$(COMMITS_SINCE_VERSION)
 	endif
 
 	FILES_CHANGED = $(shell $(GIT) status --porcelain 2>/dev/null | sed '/^??/d' )
 	ifneq ($(FILES_CHANGED),)
-		VERSION := "$(VERSION)-dirty"
+		VERSION := $(VERSION)-dirty
 	endif
 else # not commited yet
-	VERSION := "rev0"
+	VERSION := rev0
 endif
 
 ########################################################################
 
-VARS=-V GITHUB=$(GITHUB) 
+VARS=-V GITHUB=$(GITHUB) -V VERSION=$(VERSION) 
 
 ########################################################################
 

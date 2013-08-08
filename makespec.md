@@ -136,7 +136,17 @@ ABSTRACT
 
 VERSION
   : The current version number as determined by looking for the latest git tag
-    in the current branch that matches the regular expression `^v[0-9]`.
+    in the current branch that matches the regular expression `^v[0-9]`. Commits
+    since the latest version tag are enumerated as `rev1`, `rev2` etc. The version
+    postfix `-dirty` is appended for uncommited documents.
+    
+## Template variables
+
+GIT_REPOSITORY
+  : As defined in metadata variable GITHUB.
+
+VERSION
+  : Same as the document variable VERSION.
 
 ## Plugins
 
@@ -182,12 +192,12 @@ The following specifications make use of makespec:
 * ...
 
 Last but not least, the documentation of makespec is also created with makespec.
-[This document](https://github.com/jakobib/makespec/blob/master/README.md) was
-last modified at {GIT_REVISION_DATE} with hash {GIT_REVISION_HASH}.
 
 # Revision history
 
-This document is version {VERSION}.
+[This document](https://github.com/jakobib/makespec/blob/master/README.md) with
+version *{VERSION}* was last modified at *{GIT_REVISION_DATE}* with hash
+*{GIT_REVISION_HASH}*.
 
 Also available as [Atom feed]({GIT_ATOM_FEED}).
 

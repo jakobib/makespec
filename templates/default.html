@@ -80,7 +80,7 @@ $for(author)$
 <h3 class="author">$author$</h3>
 $endfor$
 $if(date)$
-<h4 class="date">$date$</h4>
+<h4 class="date">$date$$if(VERSION)$ (version $VERSION$)$endif$</h4>
 $endif$
 $if(html5)$
 </header>
