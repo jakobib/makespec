@@ -26,6 +26,35 @@ include $(MAKESPEC)/configuration.make
 
 ########################################################################
 
+# make sure there is a git repository
+HAS_REPOSITORY = $(shell $(GIT) rev-parse --git-dir 2>/dev/null)
+GIT_WITH_REPO  = $(if $(HAS_REPOSITORY),$(GIT),$(error "Not a git repository - call 'git init'!"))
+
+# get latest version tag (possibly empty) or exit if no git repository
+VERSION := $(shell $(GIT_WITH_REPO) describe --always --abbrev=0 --tags 2>/dev/null | sed '/^[^v]/d; s/^v//' | head -1)
+
+ifneq ($(REVHASH),)
+	VERSION_HASH = $(if $(VERSION),$(shell $(GIT) rev-list v${VERSION} | head -1))
+
+	ifneq ($(VERSION_HASH),$(REVHASH))
+		ifeq ($(VERSION_HASH),)
+			COMMITS_SINCE_VERSION=$(shell $(GIT) rev-list --all | wc -l)
+		else
+			COMMITS_SINCE_VERSION=$(shell $(GIT) rev-list v$(VERSION).. | wc -l)
+		endif
+		VERSION := "$(VERSION)rev$(COMMITS_SINCE_VERSION)"
+	endif
+
+	FILES_CHANGED = $(shell $(GIT) status --porcelain 2>/dev/null | sed '/^??/d' )
+	ifneq ($(FILES_CHANGED),)
+		VERSION := "$(VERSION)-dirty"
+	endif
+else # not commited yet
+	VERSION := "rev0"
+endif
+
+########################################################################
+
 VARS=-V GITHUB=$(GITHUB) 
 
 ########################################################################
@@ -35,10 +64,6 @@ COMBINED = $(NAME).tmp
 RESULTFILES  = $(NAME).html
 RESULTFILES += $(foreach f,$(FORMATS),$(NAME).$(f))
 
-# TODO: check whether current version is modified since $VERSION
-
-VERSION=$(shell git describe --abbrev=0 --tags | sed '/^[^v]/d; s/^v//' | head -1)
-
 ########################################################################
 
 include $(MAKESPEC)/formats.make
@@ -46,11 +71,18 @@ include $(MAKESPEC)/workflow.make
 
 ########################################################################
 
-info:
+status:
+ifeq ($(REVSHRT),)
+	@echo "Not commited yet - version $(VERSION)"
+else
+	@echo "Last commit $(REVSHRT) at $(REVDATE) - version $(VERSION)"
+#	@if [ -n "$(FILES_CHANGED)" ]; then echo "Your repository contains uncommitted changes!"; fi
+endif
+
+info: status
 	@echo TITLE='$(TITLE)'
 	@echo AUTHOR='$(AUTHOR)'
 	@echo DATE='$(DATE)'
-	@echo VERSION='$(VERSION)'
 	@echo ABSTRACT_FROM='$(ABSTRACT_FROM)'
 	@echo ABSTRACT='$(ABSTRACT)'
 	@echo MAKESPEC='$(MAKESPEC)'
@@ -59,14 +91,11 @@ info:
 	@echo SOURCE='$(SOURCE)'
 	@echo FORMATS='$(FORMATS)'
 	@echo RESULTFILES='$(RESULTFILES)'
-	@echo REVHASH='$(REVHASH)'
-	@echo REVSHRT='$(REVSHRT)'
-	@echo REVDATE='$(REVDATE)'
 	@if [ "$(FORMATS)" ] ; then \
 		for f in html $(FORMATS); do \
 			echo "$$f"; \
 		done \
-	fi		
+	fi
 
 sources: Makefile $(MAKESPEC) $(SOURCE) $(REFERENCES)
 
@@ -86,7 +115,10 @@ $(COMBINED): sources
 		echo "" >> $@ ; \
 	fi
 	@echo "" > changes.tmp
+ifneq ($(REVSHRT),)
+# TODO: follow additional source files?
 	@$(GIT) log -n $(REVISIONS) --pretty=format:'$(LOGFORMAT)' --follow $(SOURCE) >> changes.tmp
+endif
 	@echo "" >> changes.tmp
 	@$(MAKESPEC)/replace-vars.pl \
 		GIT_REVISION_DATE '$(REVDATE)' \
@@ -97,10 +129,6 @@ $(COMBINED): sources
 		GIT_CHANGES: changes.tmp \
 		< $(SOURCE) | $(MAKESPEC)/include.pl >> $@
 	@rm -f changes.tmp
-
-# TODO: make this a Makefile variable
-status:
-	@$(GIT) diff-index --quiet HEAD $(SOURCE) || echo "Current $(SOURCE) not checked in, so this is a DRAFT!"
 
 $(NAME).tmp.ttl: sources
 	@$(MAKESPEC)/CodeBlocks $(TTLFORMAT) $(SOURCE) > $@

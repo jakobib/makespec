@@ -23,9 +23,9 @@ ifeq ($(SOURCE),)
 	SOURCE = $(NAME).md
 endif
 
-REVHASH = $(shell $(GIT) log -1 --format="%H" -- $(SOURCE))
-REVDATE = $(shell $(GIT) log -1 --format="%ai" -- $(SOURCE))
-REVSHRT = $(shell $(GIT) log -1 --format="%h" -- $(SOURCE))
+REVHASH = $(shell $(GIT) log -1 --format="%H"  2>/dev/null)
+REVDATE = $(shell $(GIT) log -1 --format="%ai" 2>/dev/null)
+REVSHRT = $(shell $(GIT) log -1 --format="%h"  2>/dev/null)
 
 ifeq ($(DATE),)
 	DATE = $(REVDATE)
