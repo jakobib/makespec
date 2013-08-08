@@ -36,7 +36,7 @@ clone the `gh-pages` branch:
 
 Make sure you have the most recent version
 
-    git pull origin master gh-pages
+    make pull
 
 Edit the specification source file in Markdown syntax, for instance with vim
 editor
@@ -58,7 +58,7 @@ Create a `gh-pages` branch with the HTML version
 
 Publish
 
-    git push origin master gh-pages
+    make push
 
 ## Configuration
 
@@ -70,7 +70,7 @@ NAME
   : Required short name. Should not contain spaces and similar nasty characters.
 
 SOURCE
-  : Source file in Pandoc Markdown syntax, set to `NAME.md` by default.
+  : Source file in Pandoc Markdown syntax, set to `$NAME.md` by default.
 
 GITHUB
   : Github repository to link to in revision history.
@@ -149,6 +149,27 @@ VERSION
 * [Pandoc](http://johnmacfarlane.net/pandoc/) version >= 1.9
 * [Rapper](http://librdf.org/raptor/rapper.html) from Raptor RDF library
   (only if writing an RDF ontology)
+
+# Internals
+
+## How documents are build
+
+    $SOURCE --> $NAME.tmp.md --> $NAME.(html|tex|pdf|odt...)
+
+## How schemas are build
+
+Schema output files are extracted from code sections of the source file.  All
+schemas are checked for syntax errors.
+
+    $SOURCE --> $(NAME).tmp.ttl --> $(NAME).(tmp|owl)
+
+## Interaction with GitHub or another git remote
+
+`make pull`:
+    git pull origin master gh-pages --tags
+
+`make push`:
+	git push origin master gh-pages --tags
 
 # Examples
 

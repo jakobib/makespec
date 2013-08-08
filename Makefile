@@ -23,7 +23,6 @@ endif
 # include files
 include $(MAKESPEC)/executables.make
 include $(MAKESPEC)/configuration.make
-include $(MAKESPEC)/formats.make
 
 ########################################################################
 
@@ -36,7 +35,14 @@ COMBINED = $(NAME).tmp
 RESULTFILES  = $(NAME).html
 RESULTFILES += $(foreach f,$(FORMATS),$(NAME).$(f))
 
+# TODO: check whether current version is modified since $VERSION
+
 VERSION=$(shell git describe --abbrev=0 --tags | sed '/^[^v]/d; s/^v//' | head -1)
+
+########################################################################
+
+include $(MAKESPEC)/formats.make
+include $(MAKESPEC)/workflow.make
 
 ########################################################################
 
@@ -96,13 +102,13 @@ $(COMBINED): sources
 status:
 	@$(GIT) diff-index --quiet HEAD $(SOURCE) || echo "Current $(SOURCE) not checked in, so this is a DRAFT!"
 
-$(NAME)-tmp.ttl: sources
+$(NAME).tmp.ttl: sources
 	@$(MAKESPEC)/CodeBlocks $(TTLFORMAT) $(SOURCE) > $@
 
-$(NAME).ttl: $(NAME)-tmp.ttl
+$(NAME).ttl: $(NAME).tmp.ttl
 	@$(RAPPER) --guess $< -o turtle > $@
 	
-$(NAME).owl: $(NAME)-tmp.ttl
+$(NAME).owl: $(NAME).tmp.ttl
 	@$(RAPPER) --guess $< -o rdfxml > $@
 
 revision: $(RESULTFILES)
@@ -134,4 +140,4 @@ clean:
 purge: clean
 	@rm -f $(RESULTFILES)
 
-.PHONY: info clean purge default status
+.PHONY: info clean purge default status push pull
