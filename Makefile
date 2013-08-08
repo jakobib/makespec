@@ -4,7 +4,7 @@
 # Current version: https://$(GIT)hub.com/jakobib/makespec              #
 # Documentation:   http://jakobib.$(GIT)hub.com/makespec               #
 #                                                                      #
-# Requires at least GNU Make >= 3.81, Pandoc, Perl, and sed. 		   #
+# Requires at least GNU Make >= 3.81, Pandoc, Perl, and sed.           #
 ########################################################################
 
 # path of this file
@@ -168,4 +168,4 @@ clean:
 purge: clean
 	@rm -f $(RESULTFILES)
 
-.PHONY: info clean purge default status push pull
+.PHONY: info clean purge default status push pull reset-website
