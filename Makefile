@@ -29,8 +29,6 @@ include $(MAKESPEC)/formats.make
 
 VARS=-V GITHUB=$(GITHUB) 
 
-TEX_VARS=-V documentclass=scrreprt -V "mainfont=DejaVu Serif"
-
 ########################################################################
 
 COMBINED = $(NAME).tmp
@@ -41,7 +39,6 @@ RESULTFILES += $(foreach f,$(FORMATS),$(NAME).$(f))
 VERSION=$(shell git describe --abbrev=0 --tags | sed '/^[^v]/d; s/^v//' | head -1)
 
 ########################################################################
-
 
 info:
 	@echo TITLE='$(TITLE)'
@@ -95,34 +92,9 @@ $(COMBINED): sources
 		< $(SOURCE) | $(MAKESPEC)/include.pl >> $@
 	@rm -f changes.tmp
 
+# TODO: make this a Makefile variable
 status:
 	@$(GIT) diff-index --quiet HEAD $(SOURCE) || echo "Current $(SOURCE) not checked in, so this is a DRAFT!"
-
-$(NAME).html: $(COMBINED) $(HTML_TEMPLATE) status
-	@echo "Creating $@..."
-	@$(PANDOC) --smart -s -N --template=$(HTML_TEMPLATE) --toc -f markdown -t html5 $(VARS) $(COMBINED) \
-		| perl -p -e 's!(http://[^<]+)\.</p>!<a href="$$1"><code class="url">$$1</code></a>.</p>!g' \
-		| perl -p -e 's!(<h2(.+)span>\s*([^<]+)</a></h2>)!<a id="$$3"></a>$$1!g' \
-		| sed 's!<td style="text-align: center;">!<td>!' > $@
-
-$(NAME).tex:
-	@$(PANDOC) --smart -s -N --template=$(TEX_TEMPLATE) --toc -f markdown -o $@ $(COMBINED) $(VARS) $(TEX_VARS)
-#		$(BIBARGS) $(BIBLATEX)
-
-$(NAME).pdf: $(COMBINED) $(TEX_TEMPLATE) status
-	@echo "Creating $@..."
-	@$(PANDOC) --smart -s -N --template=$(TEX_TEMPLATE) --latex-engine=xelatex --toc -f markdown -o $@ $(COMBINED) $(VARS) $(TEX_VARS)
-
-# --bibliography=$(REFERENCES) 
-
-$(NAME).epub: $(COMBINED) $(EPUB_CSS)
-	$(PANDOC) --epub-stylesheet $(EPUB_CSS) -N -S --template $(HTML_TEMPLATE) --toc $(COMBINED) -o $@
-
-$(NAME).rtf: $(COMBINED)
-	@$(PANDOC) --smart -s -N --toc $(COMBINED) -o $@
-
-$(NAME).odt: $(COMBINED)
-	@$(PANDOC) --smart -s -N --toc $(COMBINED) -o $@
 
 $(NAME)-tmp.ttl: sources
 	@$(MAKESPEC)/CodeBlocks $(TTLFORMAT) $(SOURCE) > $@
@@ -153,6 +125,8 @@ website: sources clean purge revision $(RESULTFILES)
 cleancopy:
 	@echo "checking that no local modifcations exist..."
 	@$(GIT) diff-index --quiet HEAD --
+
+all: $(RESULTFILES)
 
 clean:
 	@rm -f $(NAME)-*.* *.tmp

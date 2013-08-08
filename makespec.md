@@ -64,6 +64,8 @@ Publish
 
 [configuration]: #configuration
 
+### Basic metadata
+
 NAME
   : Required short name. Should not contain spaces and similar nasty characters.
 
@@ -72,13 +74,6 @@ SOURCE
 
 GITHUB
   : Github repository to link to in revision history.
-
-REVISIONS
-  : Number of revisions to show in the revision history (GIT_CHANGES).
-
-FORMATS
-  : If your specification contains a RDF ontology written in Turtle syntax,
-    set `FORMATS=ttl owl`. More formats may be supported in the future.
 
 TITLE
   : Title, unless already specified in the source file.
@@ -97,6 +92,25 @@ ABSTRACT
 ABSTRACT_FROM
   : A file to read abstract from if no ABSTRACT was defined. Set to
     `abstract.md` by default.
+
+### Output control
+
+REVISIONS
+  : Number of revisions to show in the revision history (GIT_CHANGES).
+
+FORMATS
+  : If your specification contains a RDF ontology written in Turtle syntax,
+    set `FORMATS=ttl owl`. More formats may be supported in the future.
+    Format `html` is always enabled by default.
+
+HTML_TEMPLATE
+  : An optional Pandoc template for HTML output
+
+HTML_TEMPLATE
+  : An optional CSS file for HTML output
+
+TEX_TEMPLATE
+  : An optional Pandoc template for LaTeX and PDF output
 
 ## Document variables
 
