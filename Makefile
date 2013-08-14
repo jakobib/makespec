@@ -162,8 +162,11 @@ cleancopy:
 
 all: $(RESULTFILES)
 
-clean:
-	@rm -f $(NAME)-*.* *.tmp
+clean: clean-tex
+	@rm -f $(NAME)-*.* *.tmp *.log *.aux *.out *.toc
+
+clean-tex:
+	@rm -f *.out *.log *.aux *.bbl *.blg *.dvi *.toc
 
 purge: clean
 	@rm -f $(RESULTFILES)
