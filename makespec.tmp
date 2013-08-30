@@ -1,0 +1,232 @@
+% Creating specifications with makespec
+% Jakob Voß
+% 2013-08-30
+
+# Introduction
+
+**makespec** is a set of rules and templates to manage specifications written in [Pandoc Markdown](http://johnmacfarlane.net/pandoc/demo/example9/pandocs-markdown.html). It consists of a Makefile that generates human-readable documentation (HTML, PDF...) and schema files (OWL, Turtle, Relax-NG, BNF...) from a common source file. The Makefile also supports generating and updating [GitHub pages](http://pages.github.com/) to publish the specification at GitHub.  Feel free to reuse, [comment](https://github.com/jakobib/makespec/issues), fork, and modify makesec! The current version can be found at <https://github.com/jakobib/makespec>.
+
+# Usage
+
+## Setup
+
+Best practice using makedoc is to host your specification in a git repository,
+optionally published at [GitHub](http://github.com/). Your repository should
+contain at least:
+
+ * The specification as Pandoc Markdown source file (e.g. `myspec.md`)
+ * A `Makefile` with basic settings and [configuration], such as:
+   
+        NAME=myspec
+        GITHUB=https://github.com/myaccount/myspec/
+     
+        include makespec/Makefile
+
+ * A subdirectory `makespec` containing makespec. Best practice is inclusion
+   as as git submodule. To do so in a new git repository:
+
+        git submodule add https://github.com/jakobib/makespec.git
+
+To clone an existing specification that uses makespace this way:
+
+    git clone --recursive http://github.com/myaccount/myspec.git
+
+If you publish the specification as GitHub pages, you should not forget to also
+clone the `gh-pages` branch:
+
+    git checkout -b gh-pages origin/gh-pages && git checkout master
+
+## Workflow
+
+Make sure you have the most recent version
+
+    make pull
+
+Edit the specification source file in Markdown syntax, for instance with vim
+editor
+
+    vim myspec.md
+
+Create a HTML version
+
+    make html
+
+Commit to your repository
+
+    git add Makefile myspec.md
+    git commit -m "improved my fancy specification"
+
+Create a `gh-pages` branch with the HTML version
+
+    make website
+
+Publish
+
+    make push
+
+## Configuration
+
+[configuration]: #configuration
+
+### Basic metadata
+
+NAME
+  : Required short name. Should not contain spaces and similar nasty characters.
+
+SOURCE
+  : Source file in Pandoc Markdown syntax, set to `$NAME.md` by default.
+
+GITHUB
+  : Github repository to link to in revision history.
+
+TITLE
+  : Title, unless already specified in the source file.
+
+AUTHOR
+  : List of authors, unless already specified in the source file.
+
+DATE
+  : Fixed date of publication. Set to a timestamp of the latest commit
+    by default.
+
+LANGUAGE
+  : Document language code (passed to LaTeX or HTML).
+
+ABSTRACT
+  : A short abstract (in Markdown syntax) which is used as template 
+    variable ABSTRACT.
+
+ABSTRACT_FROM
+  : A file to read abstract from if no ABSTRACT was defined. Set to
+    `abstract.md` by default.
+
+### Output control
+
+REVISIONS
+  : Number of revisions to show in the revision history (GIT_CHANGES).
+
+FORMATS
+  : If your specification contains a RDF ontology written in Turtle syntax,
+    set `FORMATS=ttl owl`. More formats may be supported in the future.
+    Format `html` is always enabled by default.
+
+HTML_TEMPLATE
+  : An optional Pandoc template for HTML output
+
+HTML_TEMPLATE
+  : An optional CSS file for HTML output
+
+TEX_TEMPLATE
+  : An optional Pandoc template for LaTeX and PDF output
+
+## Document variables
+
+The following variables, if enclosed in curly brackets (such as
+`{THIS_VARIABLE}`) are automatically replaced before conversion from Markdown
+syntax.
+
+GIT_REVISION_DATE
+  : timestamp of the latest commit.
+
+GIT_REVISION_HASH
+  : Short revision hash of the latest commit.
+
+GIT_CHANGES
+  : Revision history. Length can be set with configuration variable `REVISIONS`.
+
+GIT_ATOM_FEED
+  : URL of an Atom feed with revisions at GitHub.
+
+ABSTRACT
+  : Abstract, if defined with configuration variable `ABSTRACT` or 
+    `ABSTRACT_FROM`.
+
+VERSION
+  : The current version number as determined by looking for the latest git tag
+    in the current branch that matches the regular expression `^v[0-9]`. Commits
+    since the latest version tag are enumerated as `rev1`, `rev2` etc. The version
+    postfix `-dirty` is appended for uncommited documents.
+    
+## Template variables
+
+GIT_REPOSITORY
+  : As defined in metadata variable GITHUB.
+
+VERSION
+  : Same as the document variable VERSION.
+
+lang
+  : As defined in metadata variable LANGUAGE.
+
+## Plugins
+
+Makespec makes use of several plugins of Pandoc Markdown syntax.
+
+### Include plugin
+
+One can include markdown files with the following syntax:
+
+    `filename.md`{.include}
+
+The inclusion statement should be placed on the begin of a single line. By now,
+inclusion is implemented on syntax level. A later version of this plugin will
+act on the abstract syntax tree.
+
+
+## Requirements
+
+* GNU Make
+* Perl >= 5.14.1
+* [Pandoc](http://johnmacfarlane.net/pandoc/) version >= 1.9
+* [Rapper](http://librdf.org/raptor/rapper.html) from Raptor RDF library
+  (only if writing an RDF ontology)
+
+# Internals
+
+## How documents are build
+
+    $SOURCE --> $NAME.tmp.md --> $NAME.(html|tex|pdf|odt...)
+
+## How schemas are build
+
+Schema output files are extracted from code sections of the source file.  All
+schemas are checked for syntax errors.
+
+    $SOURCE --> $(NAME).tmp.ttl --> $(NAME).(tmp|owl)
+
+## Interaction with GitHub or another git remote
+
+`make pull`:
+    git pull origin master gh-pages --tags
+
+`make push`:
+	git push origin master gh-pages --tags
+
+# Examples
+
+The following specifications make use of makespec:
+
+* [Simple Service Status Ontology (SSSO)](https://github.com/gbv/ssso)
+* [Document Service Ontology (DSO)](https://github.com/gbv/dso)
+* [Document Availability Information API (DAIA)](https://github.com/gbv/daiaspec)
+* [Patrons Account Information API (PAIA)](https://github.com/gbv/paia)
+* ...
+
+Last but not least, the documentation of makespec is also created with makespec.
+
+# Revision history
+
+[This document](https://github.com/jakobib/makespec/blob/master/README.md) with
+version *0.33* was last modified at *2013-08-30* with hash
+*[4178554](https://github.com/jakobib/makespec/commit/4178554a053c2281359cf7cde93f97d097027e80)*.
+
+Also available as [Atom feed](https://github.com/jakobib/makespec/commits/master.atom).
+
+
+* [`2013-08-30 09:51:22 +0200`](makespec-4178554.html): [support document language](https://github.com/jakobib/makespec/commit/4178554a053c2281359cf7cde93f97d097027e80)
+* [`2013-08-08 11:57:55 +0200`](makespec-7b37b27.html): [show and document VERSION](https://github.com/jakobib/makespec/commit/7b37b277092dde4eb65ec89e02fdf1ec59d093b4)
+* [`2013-08-08 09:41:22 +0200`](makespec-881fe9b.html): [documentation and workflow](https://github.com/jakobib/makespec/commit/881fe9b7cd864a6316f5c2cfbf816a8258b72dd8)
+* [`2013-08-08 09:23:35 +0200`](makespec-e8d212c.html): [refactor and extend output formats, closes #12](https://github.com/jakobib/makespec/commit/e8d212cd837421796f351eb76b2690beb9ad621c)
+* [`2013-08-07 14:24:37 +0200`](makespec-426234a.html): [support VERSION](https://github.com/jakobib/makespec/commit/426234ad88584dcdca04a65d829fd742d3b0a57a)
+
+
