@@ -85,6 +85,9 @@ DATE
   : Fixed date of publication. Set to a timestamp of the latest commit
     by default.
 
+LANGUAGE
+  : Document language code (passed to LaTeX or HTML).
+
 ABSTRACT
   : A short abstract (in Markdown syntax) which is used as template 
     variable ABSTRACT.
@@ -147,6 +150,9 @@ GIT_REPOSITORY
 
 VERSION
   : Same as the document variable VERSION.
+
+lang
+  : As defined in metadata variable LANGUAGE.
 
 ## Plugins
 

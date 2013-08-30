@@ -57,6 +57,10 @@ endif
 
 VARS=-V GITHUB=$(GITHUB) -V VERSION=$(VERSION) 
 
+ifneq ($(LANGUAGE),)
+	VARS += -V lang=$(LANGUAGE)
+endif
+
 ########################################################################
 
 COMBINED = $(NAME).tmp
@@ -83,6 +87,7 @@ info: status
 	@echo TITLE='$(TITLE)'
 	@echo AUTHOR='$(AUTHOR)'
 	@echo DATE='$(DATE)'
+	@echo LANGUAGE='$(LANGUAGE)'
 	@echo ABSTRACT_FROM='$(ABSTRACT_FROM)'
 	@echo ABSTRACT='$(ABSTRACT)'
 	@echo MAKESPEC='$(MAKESPEC)'
