@@ -7,7 +7,7 @@ HAS_REPOSITORY = $(shell $(GIT) rev-parse --git-dir 2>/dev/null)
 GIT_WITH_REPO  = $(if $(HAS_REPOSITORY),$(GIT),$(error "Not a git repository - call 'git init'!"))
 
 # get latest version tag (possibly empty) or exit if no git repository
-VERSION := $(shell $(GIT_WITH_REPO) describe --always --abbrev=0 --tags 2>/dev/null | sed '/^[^v][0-9]/d; s/^v//' | head -1)
+VERSION := $(shell $(GIT_WITH_REPO) describe --abbrev=0 --tags 2>/dev/null | sed '/^[^v][0-9]/d; s/^v//' | head -1)
 
 ifneq ($(REVHASH),)
 	VERSION_HASH = $(if $(VERSION),$(shell $(GIT) rev-list v${VERSION} | head -1))
