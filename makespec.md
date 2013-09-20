@@ -215,6 +215,13 @@ The following specifications make use of makespec:
 
 Last but not least, the documentation of makespec is also created with makespec.
 
+# Extension
+
+The makefile `local.make` can be used for custom settings and extensions in
+forks of makespec. Please don't commit this files together with changes to
+makespec core files to facilitate merging back changes of your fork into
+makespec.
+
 # Revision history
 
 [This document](https://github.com/jakobib/makespec/blob/master/README.md) with

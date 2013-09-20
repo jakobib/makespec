@@ -24,6 +24,9 @@ endif
 include $(MAKESPEC)/executables.make
 include $(MAKESPEC)/configuration.make
 include $(MAKESPEC)/version.make
+ifneq ($(wildcard $(MAKESPEC)/local.make),)
+	include $(MAKESPEC)/local.make
+endif
 
 ########################################################################
 
