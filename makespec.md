@@ -12,10 +12,10 @@ contain at least:
 
  * The specification as Pandoc Markdown source file (e.g. `myspec.md`)
  * A `Makefile` with basic settings and [configuration], such as:
-   
+
         NAME=myspec
         GITHUB=https://github.com/myaccount/myspec/
-     
+
         include makespec/Makefile
 
  * A subdirectory `makespec` containing makespec. Best practice is inclusion
@@ -142,7 +142,7 @@ VERSION
     
 ## Template variables
 
-GIT_REPOSITORY
+GITHUB
   : As defined in metadata variable GITHUB.
 
 VERSION
