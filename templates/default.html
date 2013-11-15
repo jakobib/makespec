@@ -19,6 +19,9 @@ $if(date)$
   <meta name="date" content="$date$" />
 $endif$
   <title>$if(title-prefix)$$title-prefix$ - $endif$$if(pagetitle)$$pagetitle$$endif$</title>
+$if(RDFXML_URL)$
+  <link rel="alternate" type="application/rdf+xml" href="$RDFXML_URL$" />
+$endif$
 $if(html5)$
    <!--[if lt IE 9]>
     <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>

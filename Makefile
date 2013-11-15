@@ -36,9 +36,16 @@ ifneq ($(LANGUAGE),)
 	VARS += -V lang=$(LANGUAGE)
 endif
 
+ifneq ($(findstring owl,$(FORMATS)),)
+	VARS += -V RDFXML_URL=$(NAME).owl
+endif
+
 ########################################################################
 
 COMBINED = $(NAME).tmp
+
+RESULTFILES  = $(NAME).html
+RESULTFILES += $(foreach f,$(FORMATS),$(NAME).$(f))
 
 RESULTFILES  = $(NAME).html
 RESULTFILES += $(foreach f,$(FORMATS),$(NAME).$(f))
@@ -77,6 +84,7 @@ info: status
 			echo "$$f"; \
 		done \
 	fi
+	@echo VARS='$(VARS)'
 
 sources: Makefile $(MAKESPEC) $(SOURCE) $(REFERENCES)
 
