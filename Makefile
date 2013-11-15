@@ -112,8 +112,14 @@ endif
 		< $(SOURCE) | $(MAKESPEC)/include.pl >> $@
 	@rm -f changes.tmp
 
+# TODO: More variables (?)
 $(NAME).tmp.ttl: sources
 	@$(MAKESPEC)/CodeBlocks $(TTLFORMAT) $(SOURCE) > $@
+	@$(MAKESPEC)/CodeBlocks $(TTLFORMAT) $(SOURCE) | \
+		$(MAKESPEC)/replace-vars.pl \
+			GIT_REVISION_DATE '$(REVDATE)' \
+	        VERSION '$(VERSION)' \
+	    > $@
 
 $(NAME).ttl: $(NAME).tmp.ttl
 	@$(RAPPER) --guess $< -o turtle > $@
