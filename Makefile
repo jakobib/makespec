@@ -107,6 +107,7 @@ endif
 		GIT_REVISION_HASH '[${REVSHRT}](${REVLINK})' \
 		ABSTRACT '$(ABSTRACT)' \
 		VERSION '$(VERSION)' \
+		GITHUB '$(GITHUB)' \
 		GIT_CHANGES: changes.tmp \
 		< $(SOURCE) | $(MAKESPEC)/include.pl >> $@
 	@rm -f changes.tmp
