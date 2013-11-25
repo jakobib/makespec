@@ -85,6 +85,10 @@ DATE
   : Fixed date of publication. Set to a timestamp of the latest commit
     by default.
 
+VERSION
+  : A document version. Set to the current version by inspecting git tags
+    by default. Setting `VERSION=none` will omit version numbers.
+	
 LANGUAGE
   : Document language code (passed to LaTeX or HTML).
 

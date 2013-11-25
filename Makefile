@@ -59,9 +59,9 @@ include $(MAKESPEC)/workflow.make
 
 status:
 ifeq ($(REVSHRT),)
-	@echo "Not commited yet - version $(VERSION)"
+	@echo "Not commited yet$(ABOUT_VERSION)"
 else
-	@echo "Last commit $(REVSHRT) at $(REVDATE) - version $(VERSION)"
+	@echo "Last commit $(REVSHRT) at $(REVDATE)$(ABOUT_VERSION)"
 #	@if [ -n "$(FILES_CHANGED)" ]; then echo "Your repository contains uncommitted changes!"; fi
 endif
 
