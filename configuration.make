@@ -25,6 +25,7 @@ endif
 
 REVHASH = $(shell $(GIT) log -1 --format="%H"  2>/dev/null)
 REVDATE = $(shell $(GIT) log -1 --format="%ad" --date=short 2>/dev/null)
+REVTIME = $(shell $(GIT) log -1 --format="%ad" --date=iso 2>/dev/null)
 REVSHRT = $(shell $(GIT) log -1 --format="%h"  2>/dev/null)
 
 ifeq ($(DATE),)

@@ -1,3 +1,6 @@
+This version: <http://jakobib.github.io/makespec/{CURRENT_VERSION}.html> ({CURRENT_TIMESTAMP})\
+Latest version: <http://jakobib.github.io/makespec/> 
+
 # Introduction
 
 {ABSTRACT}
@@ -126,7 +129,7 @@ The following variables, if enclosed in curly brackets (such as
 syntax.
 
 GIT_REVISION_DATE
-  : timestamp of the latest commit.
+  : Date of of the latest commit (YYYY-MM-DD).
 
 GIT_REVISION_HASH
   : Short revision hash of the latest commit.
@@ -144,6 +147,12 @@ ABSTRACT
 VERSION
   : The current version number (see [versioning](#versioning)).
     
+CURRENT_VERSION
+  : Name and short revision hash (e.g. `makespec-51d6519`).
+
+CURRENT_TIMESTAMP
+  : Timestamp of the latest commit in ISO format.
+
 ## Template variables
 
 GITHUB
@@ -166,6 +175,17 @@ lang
 * [Pandoc](http://johnmacfarlane.net/pandoc/) version >= 1.9
 * [Rapper](http://librdf.org/raptor/rapper.html) from Raptor RDF library
   (only if writing an RDF ontology)
+* XeTex and etoolbox.sty for PDF output 
+
+On a fresh Ubuntu, the following packages should be installed
+
+* pandoc
+* texlive-xetex
+* texlive-latex-extra
+* texlive-fonts-recommended
+* texlive-fonts-extra
+* latex-beamer
+* raptor-utils
 
 ## Versioning
 
