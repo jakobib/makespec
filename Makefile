@@ -145,7 +145,7 @@ revision: $(RESULTFILES)
 website: sources clean purge revision $(RESULTFILES)
 	@echo "new revision to be shown at $(GITHUB)"
 	@rm $(RESULTFILES)
-	@rm *.tmp
+	@rm -f *.tmp *.tmp.ttl
 	@$(GIT) checkout gh-pages || ( $(GIT) checkout --orphan gh-pages && git rm -rf . )
 	@for f in html $(FORMATS); do \
 		cp $(NAME)-$(REVSHRT).$$f $(NAME).$$f ; \
