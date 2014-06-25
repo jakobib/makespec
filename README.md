@@ -6,5 +6,5 @@ Markdown](http://johnmacfarlane.net/pandoc/demo/example9/pandocs-markdown.html).
 Makespec also supports generating and updating [GitHub
 pages](http://pages.github.com/) to publish the specification at GitHub. Feel
 free to reuse, [comment](https://github.com/jakobib/makespec/issues), fork, and
-modify makesec! The current version can be found at
+modify makespec! The current version can be found at
 <https://github.com/jakobib/makespec>.
