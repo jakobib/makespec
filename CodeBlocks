@@ -15,7 +15,7 @@ foreach (@ARGV) {
     $doc = $doc->[1];
     foreach (@$doc) {
         next unless ref $_;
-        my ($type,$content) = %{$_};
+        my ($type,$content) = %{$_} eq 2 ? %{$_} : ($_->{t}, $_->{c});
         next unless $type eq 'CodeBlock';
         my $formats = $content->[0]->[1];
         next unless (!$format and !@$formats) 
