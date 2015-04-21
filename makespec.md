@@ -193,11 +193,11 @@ Document versioning is based on git commits and tags. The **`VERSION`**
 variable is set to the latest git tag, optionally appended by a revision
 counter and the suffix '`-dirty`' for uncommitted changes. Version tags must
 start with the small letter '`v`' followed by a digit. For instance if the
-latest commit was tagged as '`v1.3`' then the version will be '`1.3`'. If two
-commits have been made since this tag, the version will be '`1.3rev2`'. If the
-git working copy further contains uncommitted changes, the version will be
-'`1.3rev2-dirty`'. Without tags, version number are just based on the number of
-commits, starting with '`rev0`' (no commit).
+latest commit was tagged as '`v1.3.0`' then the version will be '`1.3.0`'. If
+two commits have been made since this tag, the version will be '`1.3.0+2`'. If
+the git working copy further contains uncommitted changes, the version will be
+'`1.3.0+2-dirty`'. Without tags, version number are just based on the number of
+commits, starting with '`0.0.0`' (no commit).
 
 The version number can be used both as [document variable](#document-variables)
 (`{‍VERSION}`) and as [template variable](#template-variables)

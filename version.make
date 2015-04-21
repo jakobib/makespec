@@ -13,6 +13,7 @@ ifndef VERSION
 
 	ifneq ($(REVHASH),)
 		VERSION_HASH = $(if $(VERSION),$(shell $(GIT) rev-list v${VERSION} | head -1))
+		FILES_CHANGED = $(shell $(GIT) status --porcelain 2>/dev/null | sed '/^??/d' )
 
 		ifneq ($(VERSION_HASH),$(REVHASH))
 			ifeq ($(VERSION_HASH),)
@@ -20,15 +21,19 @@ ifndef VERSION
 			else
 				COMMITS_SINCE_VERSION=$(shell $(GIT) rev-list v$(VERSION).. | wc -l)
 			endif
-			VERSION := $(VERSION)rev$(COMMITS_SINCE_VERSION)
+			ifneq ($(FILES_CHANGED),)
+				VERSION := $(VERSION)+$(COMMITS_SINCE_VERSION)-dirty
+			else
+				VERSION := $(VERSION)+$(COMMITS_SINCE_VERSION)
+			endif
+		else
+			ifneq ($(FILES_CHANGED),)
+				VERSION := $(VERSION)+dirty
+			endif
 		endif
 
-		FILES_CHANGED = $(shell $(GIT) status --porcelain 2>/dev/null | sed '/^??/d' )
-		ifneq ($(FILES_CHANGED),)
-			VERSION := $(VERSION)-dirty
-		endif
 	else # not commited yet
-		VERSION := rev0
+		VERSION := 0.0.0
 	endif
 
 else
