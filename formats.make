@@ -43,7 +43,7 @@ ifneq ($(HTML_CSS),)
     HTML_ARGS += --css=$(HTML_CSS) 
 endif
 
-$(NAME).html: $(COMBINED) $(HTML_TEMPLATE) $(HTML_CSS) status
+$(NAME).html: $(COMBINED) $(HTML_TEMPLATE) status
 	@echo "Creating $@..."
 	@$(PANDOC) $(HTML_ARGS) -f markdown -t html5 $(VARS) $(HTML_VARS) $(COMBINED) \
 		| perl -p -e 's!(http://[^<]+)\.</p>!<a href="$$1"><code class="url">$$1</code></a>.</p>!g' \
