@@ -6,13 +6,25 @@
 use v5.14;
 
 while(<>) {
-    if (/^`([^`]+)`\{\.include\}\s*$/) {
-        if (-e $1 && open my $fh, '<', $1) {
+    if (/^`([^`]+)`\{\.include((\s+\.[a-z]+)*)\s*\}\s*$/) {
+        my $file = $1;
+        my @options = split /\s+/, $2; shift @options;
+
+        my $codeblock;
+        if (@options and $options[0] eq '.codeblock') {
+            $codeblock = '```';
+            shift @options;
+            $codeblock .= '{'.join(" ",@options).'}' if @options;
+        }
+
+        if (-e $file && open my $fh, '<', $file) {
+            say $codeblock if $codeblock;
             local $/;
             print <$fh>;
             close $fh;
+            say "```" if $codeblock;
         } else {
-            print STDERR "failed to include file $1\n";
+            print STDERR "failed to include file $file\n";
         }
     } else {
         print $_;
