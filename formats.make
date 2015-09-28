@@ -32,7 +32,7 @@ sql:  $(NAME).sql # SQL Schema
 HTML_ARGS = --smart --standalone --number-sections --section-divs --toc
 
 HTML_TEMPLATE ?= $(MAKESPEC)/templates/default.html
-HTML_CSS      ?=
+HTML_CSS      ?= $(MAKESPEC)/templates/default.css
 HTML_VARS     ?=
 
 ifneq ($(HTML_TEMPLATE),)
