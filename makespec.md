@@ -116,7 +116,7 @@ FORMATS
 HTML_TEMPLATE
   : An optional Pandoc template for HTML output
 
-HTML_TEMPLATE
+HTML_CSS
   : An optional CSS file for HTML output
 
 TEX_TEMPLATE
