@@ -29,7 +29,7 @@ sql:  $(NAME).sql # SQL Schema
 # Configure HTML document output format                                #
 ########################################################################
 
-HTML_ARGS = --smart --standalone --number-sections --section-divs --toc
+HTML_ARGS = --standalone --number-sections --section-divs --toc
 
 HTML_TEMPLATE ?= $(MAKESPEC)/templates/default.html
 HTML_CSS      ?= $(MAKESPEC)/templates/default.css
@@ -54,7 +54,7 @@ $(NAME).html: $(COMBINED) $(HTML_TEMPLATE) status
 # Configure LaTex and PDF document output formats                      #
 ########################################################################
 
-TEX_ARGS = --smart --standalone --number-sections --toc --latex-engine=xelatex
+TEX_ARGS = --standalone --number-sections --toc --latex-engine=xelatex
 
 TEX_TEMPLATE ?= $(MAKESPEC)/templates/default.latex
 TEX_VARS     ?= -V documentclass=scrreprt -V "mainfont=DejaVu Serif"
@@ -77,7 +77,7 @@ $(NAME).pdf: $(COMBINED) $(TEX_TEMPLATE) status
 # Configure Epub/Epub2 document output formats                         #
 ########################################################################
 
-EPUB_ARGS = --smart --standalone --number-sections --toc 
+EPUB_ARGS = --standalone --number-sections --toc 
 
 EPUB_TEMPLATE ?=
 EPUB_CSS      ?= $(MAKESPEC)/templates/default.epub.css
@@ -106,12 +106,12 @@ $(NAME).epub: $(COMBINED)
 # Configure additional document output formats                         #
 ########################################################################
 
-RTF_ARGS = --smart --standalone --number-sections --toc
+RTF_ARGS = --standalone --number-sections --toc
 
 $(NAME).rtf: $(COMBINED)
 	@$(PANDOC) $(RTF_ARGS) -f markdown -o $@ $(COMBINED)
 
-ODT_ARGS = --smart --standalone --number-sections --toc
+ODT_ARGS = --standalone --number-sections --toc
 
 $(NAME).odt: $(COMBINED)
 	@$(PANDOC) $(ODT_ARGS) -f markdown -o $@ $(COMBINED)
